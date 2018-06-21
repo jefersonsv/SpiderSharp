@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ScrapyShell
+namespace ScrapShell
 {
     public class Program
     {

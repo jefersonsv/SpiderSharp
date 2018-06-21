@@ -104,3 +104,7 @@ spider.Run();
 ## Sample
 
 The project include a simple quotes scrap of http://quotes.toscrape.com
+
+## Scrap Shell
+
+This application can be used to inspect and debug a spider

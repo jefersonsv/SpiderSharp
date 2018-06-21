@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace ScrapyShell
+namespace ScrapShell
 {
     internal static class ChromeLauncher
     {
