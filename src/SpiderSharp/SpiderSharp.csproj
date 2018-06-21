@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Jeferson Tenorio</Authors>
     <Company />
     <Description>Web Crawling and Scraping Framework</Description>
@@ -10,6 +10,7 @@
     <PackageTags>spider, scrap, crawler</PackageTags>
     <PackageLicenseUrl>https://raw.githubusercontent.com/jefersonsv/SpiderSharp/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jefersonsv/SpiderSharp</PackageProjectUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

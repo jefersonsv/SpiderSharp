@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>SpiderSharp</id>
+    <version>1.0.1</version>
+    <authors>Jeferson Tenorio</authors>
+    <owners>Jeferson Tenorio</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.githubusercontent.com/jefersonsv/SpiderSharp/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jefersonsv/SpiderSharp</projectUrl>
+    <description>Web Crawling and Scraping Framework</description>
+    <tags>spider, scrap, crawler</tags>
+    <repository url="https://github.com/jefersonsv/SpiderSharp" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="EnsureThatCore" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="HtmlAgilityPack" version="1.8.4" exclude="Build,Analyzers" />
+        <dependency id="HtmlAgilityPack.CssSelectors.NetCore" version="1.1.0" exclude="Build,Analyzers" />
+        <dependency id="Humanizer" version="2.3.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="11.0.2" exclude="Build,Analyzers" />
+        <dependency id="Slugify.Core" version="2.2.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+
+    <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\SpiderSharp.dll" target="lib\netstandard2.0\SpiderSharp.dll" />
+    <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\Data.Mongo.dll" target="lib\netstandard2.0\Data.Mongo.dll" />
+    <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\Data.Redis.dll" target="lib\netstandard2.0\Data.Redis.dll" />
+	<file src=".\src\SpiderSharp\bin\Release\netstandard2.0\HttpRequester.dll" target="lib\netstandard2.0\HttpRequester.dll" />
+  </files>
+</package>
