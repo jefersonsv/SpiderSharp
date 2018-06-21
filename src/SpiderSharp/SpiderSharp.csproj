@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jeferson Tenorio</Authors>
+    <Company />
+    <Description>Web Crawling and Scraping Framework</Description>
+    <RepositoryUrl>https://github.com/jefersonsv/SpiderSharp</RepositoryUrl>
+    <PackageTags>spider, scrap, crawler</PackageTags>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/jefersonsv/SpiderSharp/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jefersonsv/SpiderSharp</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EnsureThatCore" Version="1.0.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.8.4" />
+    <PackageReference Include="HtmlAgilityPack.CssSelectors.NetCore" Version="1.1.0" />
+    <PackageReference Include="Humanizer" Version="2.3.3" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Slugify.Core" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data.Mongo\Data.Mongo.csproj" />
+    <ProjectReference Include="..\HttpRequester\HttpRequester.csproj" />
+  </ItemGroup>
+
+</Project>
