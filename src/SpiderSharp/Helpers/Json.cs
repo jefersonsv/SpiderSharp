@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Helpers
+namespace SpiderSharp.Helpers
 {
     public static class Json
     {

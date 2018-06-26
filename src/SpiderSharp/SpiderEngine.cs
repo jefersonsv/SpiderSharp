@@ -14,6 +14,7 @@ namespace SpiderSharp
         readonly List<Action<dynamic>> pipelines = new List<Action<dynamic>>();
         private string sourceCode;
         private string url;
+        public string Cookies { get; private set; }
         protected Nodes node;
         public string SpiderName { get; private set; }
 
@@ -36,17 +37,19 @@ namespace SpiderSharp
             // Executed before Run()
             System.Console.WriteLine("Running Middlewares");
 
-            // System.Console.WriteLine("Before execute");
             Ensure.That(url).IsNotNullOrWhiteSpace();
 
             // Getting Url
             DownloaderMiddleware download = new DownloaderMiddleware()
             {
                 RedisConnectrionstring = GlobalSettings.RedisConnectionString,
-                UseRedisCache = GlobalSettings.UseRedisCache
+                UseRedisCache = GlobalSettings.UseRedisCache,
+                HttpProvider = GlobalSettings.HttpProvider,
+                DefaultHeaders = GlobalSettings.DefaultHeaders
             };
 
             sourceCode = download.RunAsync(url).Result;
+            Cookies = download.Cookies;
         }
 
         protected abstract string FollowPage();

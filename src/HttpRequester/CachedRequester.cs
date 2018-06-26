@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 
 namespace HttpRequester
 {
-    public class HttpCachedClient
+    public class CachedRequester
     {
         readonly Data.Redis.RedisConnection redis;
+        readonly Requester requester;
+        public string Cookies { get; private set; }
 
-        public HttpCachedClient(string redisConnectionString)
+        public CachedRequester(string redisConnectionString, EnumHttpProvider httpProvider)
         {
+            requester = new Requester(httpProvider);
             redis = new Data.Redis.RedisConnection(redisConnectionString);
         }
 
@@ -19,8 +22,8 @@ namespace HttpRequester
             if (!source.HasValue)
             {
                 // first time
-                HttpClient client = new HttpClient();
-                var response = await client.GetContentAsync(url);
+                var response = await requester.GetContentAsync(url);
+                Cookies = requester.Cookies;
                 if (!string.IsNullOrEmpty(response))
                 {
                     await redis.DB.StringSetAsync(key, response, DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow);

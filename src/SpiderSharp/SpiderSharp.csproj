@@ -24,8 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Data.Mongo\Data.Mongo.csproj" />
     <ProjectReference Include="..\HttpRequester\HttpRequester.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Data.Mongo">
+      <HintPath>..\Data.Mongo\bin\Release\netstandard2.0\Data.Mongo.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
