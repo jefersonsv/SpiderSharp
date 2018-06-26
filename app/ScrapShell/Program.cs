@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ScrapShell
 {
@@ -6,6 +8,16 @@ namespace ScrapShell
     {
         private static void Main(string[] args)
         {
+            if (args == null || !args.Any())
+            {
+                // https://github.com/tonerdo/readline
+                Console.WriteLine("Enter url: ");
+                string input = ReadLine.Read("# ");
+
+                
+            }
+            
+
             bool hasRegistry = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             if (hasRegistry)
             {

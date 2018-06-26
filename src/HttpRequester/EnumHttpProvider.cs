@@ -7,6 +7,8 @@ namespace HttpRequester
     public enum EnumHttpProvider
     {
         HttpClient,
+        AngleSharp,
+        WebClient,
         BetterWebClient,
         CookieWebClient
     }

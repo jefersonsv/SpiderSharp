@@ -4,6 +4,25 @@ Web Crawling and Scraping Framework
 ## Features
 * Cache web pages with Redis
 * Export the results automatically to MongoDB
+* Manny http request providers
+* Helper to ignore invalid ssl certificate
+* Helper to rename json property name token
+* Helper to get or delete N itens of collection
+* Common regular expression to grab data
+
+## Regular Expression Library
+There are some **Regex** done to grab data
+
+* Cookies: Can slice each part of cookies
+
+## Http Requester Providers
+Each provider has your own features. You can choose anyone to get a resource
+
+* HttpClient: Provides a class for sending HTTP requests and receiving HTTP responses from a resource.
+* AngleSharp: WebRequester for navigation like a browser.
+* WebClient: Provides common methods for sending data to and receiving data from a resource.
+* CookieWebClient: Extension of WebClient including Cookies of transaction.
+* BetterWebClient: Extension of WebClient including session through with cookie container, GZip header, HTTP status code.
 
 ## Pipelines
 Pipeline get a data and transform sending the result to next pipeline. Use can use how much pipelines you want.
@@ -104,6 +123,8 @@ spider.Run();
 ## Sample
 
 The project include a simple quotes scrap of http://quotes.toscrape.com
+
+![Sample running](https://github.com/jefersonsv/SpiderSharp/raw/master/sample-running.gif)
 
 ## Scrap Shell
 
