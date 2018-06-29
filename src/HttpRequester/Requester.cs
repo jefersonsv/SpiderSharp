@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using AngleSharp;
+using System.IO;
 
 namespace HttpRequester
 {
@@ -16,72 +18,73 @@ namespace HttpRequester
         public EnumHttpProvider HttpProvider { get; private set; }
         public Dictionary<string, string> DefaultHeaders = new Dictionary<string, string>();
 
-        private readonly System.Net.Http.HttpClient httpClient;
-        private readonly BetterWebClient betterWebClient;
-        private readonly CookieWebClient cookieWebClient;
+        /// <summary>
+        /// http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/?utm_source=csharpdigest&utm_medium=email&utm_campaign=featured
+        /// </summary>
+        private readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
+        private readonly BetterWebClient betterWebClient = new BetterWebClient();
+        private readonly CookieWebClient cookieWebClient = new CookieWebClient();
+        private readonly WebClient webClient = new WebClient();
+        private readonly IBrowsingContext angleSharpClient = null;
 
         public Requester(EnumHttpProvider httpProvider)
         {
             this.HttpProvider = httpProvider;
-            switch (HttpProvider)
-            {
-                case EnumHttpProvider.HttpClient:
-                    // http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/?utm_source=csharpdigest&utm_medium=email&utm_campaign=featured
-                    httpClient = new System.Net.Http.HttpClient();
-                    break;
 
-                case EnumHttpProvider.BetterWebClient:
-                    betterWebClient = new BetterWebClient();
-                    break;
+            // Anglesharp
+            var requester = new AngleSharp.Network.Default.HttpRequester();
+            requester.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
+            var configuration = Configuration.Default.WithDefaultLoader(loader =>
+                {
+                    loader.IsNavigationEnabled = true;
+                    loader.IsResourceLoadingEnabled = false;
+                },
+                requesters: new[] { requester }
+            );
 
-                case EnumHttpProvider.CookieWebClient:
-                    cookieWebClient = new CookieWebClient();
-                    break;
-            }
+            this.angleSharpClient = AngleSharp.BrowsingContext.New(configuration);
         }
 
         public async Task<string> GetContentAsync(string url)
         {
+            var uri = new Uri(url);
             PublishHeaders();
             switch (HttpProvider)
             {
                 case EnumHttpProvider.HttpClient:
                     return await httpClient.GetStringAsync(url);
 
+                case EnumHttpProvider.WebClient:
+                    return Encoding.Default.GetString(await webClient.DownloadDataTaskAsync(uri));
+
+                case EnumHttpProvider.AngleSharp:
+
+                    //using (var memoryStream = new MemoryStream())
+                    //using (var tw = new StreamWriter(memoryStream))
+                    //{
+                    //    var formatter = new AngleSharp.Xml.XmlMarkupFormatter();
+                    //    var d1 = await angleSharpClient.OpenAsync(url);
+                    //    d1.ToHtml(tw, formatter);
+                    //    tw.Flush();
+                    //    memoryStream.Flush();
+
+                    //    return Encoding.Default.GetString(memoryStream.ToArray());
+                    //}
+
+                    var browse = await angleSharpClient.OpenAsync(url);
+                    return browse.Source.Text;
+                    
+
                 case EnumHttpProvider.BetterWebClient:
 
-                    byte[] data = null;
-
-                    betterWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data = e.Result;
-                    };
-
-                    betterWebClient.DownloadDataAsync(new Uri(url));
-                    while (betterWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data = await betterWebClient.DownloadDataTaskAsync(uri);
+                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data);
 
                 case EnumHttpProvider.CookieWebClient:
 
-                    byte[] data2 = null;
-
-                    cookieWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data2 = e.Result;
-                    };
-
-                    cookieWebClient.DownloadDataAsync(new Uri(url));
-                    while (cookieWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data2 = await cookieWebClient.DownloadDataTaskAsync(uri);
+                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data2);
             }
 
@@ -130,6 +133,7 @@ namespace HttpRequester
         /// <returns></returns>
         public async Task<string> PostContentAsync(string url, HttpContent postData)
         {
+            var uri = new Uri(url);
             PublishHeaders();
             switch (HttpProvider)
             {
@@ -138,38 +142,14 @@ namespace HttpRequester
 
                 case EnumHttpProvider.BetterWebClient:
 
-                    byte[] data = null;
-
-                    betterWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data = e.Result;
-                    };
-
-                    betterWebClient.UploadDataAsync(new Uri(url), postData.ReadAsByteArrayAsync().Result);
-                    while (betterWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data = await betterWebClient.UploadDataTaskAsync(uri, postData.ReadAsByteArrayAsync().Result);
+                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data);
 
                 case EnumHttpProvider.CookieWebClient:
 
-                    byte[] data2 = null;
-
-                    cookieWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data2 = e.Result;
-                    };
-
-                    cookieWebClient.UploadDataAsync(new Uri(url), postData.ReadAsByteArrayAsync().Result);
-                    while (cookieWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data2 = await cookieWebClient.UploadDataTaskAsync(uri, postData.ReadAsByteArrayAsync().Result);
+                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data2);
             }
 
@@ -189,49 +169,18 @@ namespace HttpRequester
         /// <returns></returns>
         public async Task<string> PostContentAsync(string url, System.Collections.Specialized.NameValueCollection postData) 
         {
+            var uri = new Uri(url);
             PublishHeaders();
             switch (HttpProvider)
             {
-                case EnumHttpProvider.HttpClient:
-
-                    throw new NotImplementedException();
-                    //var res = await httpClient.PostAsync(url, "");
-                    //return await res.Content.ReadAsStringAsync();
-
                 case EnumHttpProvider.BetterWebClient:
-
-                    byte[] data = null;
-
-                    betterWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data = e.Result;
-                    };
-
-                    betterWebClient.UploadValuesAsync(new Uri(url), "POST", postData );
-                    while (betterWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data = await betterWebClient.UploadValuesTaskAsync(uri, "POST", postData );
+                    Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data);
 
                 case EnumHttpProvider.CookieWebClient:
-
-                    byte[] data2 = null;
-
-                    cookieWebClient.DownloadDataCompleted +=
-                    delegate (object sender, DownloadDataCompletedEventArgs e)
-                    {
-                        data2 = e.Result;
-                    };
-
-                    cookieWebClient.UploadValuesAsync(new Uri(url), "POST", postData);
-                    while (cookieWebClient.IsBusy)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(new Uri(url));
+                    var data2 = await cookieWebClient.UploadValuesTaskAsync(uri, "POST", postData);
+                    Cookies = cookieWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data2);
             }
 
@@ -240,3 +189,20 @@ namespace HttpRequester
 
     }
 }
+
+/*
+ * byte[] data = null;
+
+                    betterWebClient.DownloadDataCompleted +=
+                    delegate (object sender, DownloadDataCompletedEventArgs e)
+                    {
+                        data = e.Result;
+                    };
+
+                    betterWebClient.DownloadDataAsync(new Uri(url));
+                    while (betterWebClient.IsBusy)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+
+*/

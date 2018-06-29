@@ -8,6 +8,7 @@ namespace ScrapShell
     {
         private static void Main(string[] args)
         {
+
             if (args == null || !args.Any())
             {
                 // https://github.com/tonerdo/readline
