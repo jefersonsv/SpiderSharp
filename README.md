@@ -48,7 +48,7 @@ This pipeline is used to print some scraped data to stdout. The **fields** param
 This pipeline is used to do **UpSert** data on MongoDB. The **collection** parameter define the collection name to save and **unique-id-field** define the primary key of document to choose if the operation will be Insert or Update
 
 ### Safe Urls Pipeline
-> Call SafeUrlsPipeline(result, prefixUrl, fieldArgs[])
+> Call AddSafeUrlsPipeline(result, prefixUrl, fieldArgs[])
 
 This pipeline is used to add a http prefix to any scraped link data because sometimes the href attributes says only the path and hide the schema://host:port like:
 

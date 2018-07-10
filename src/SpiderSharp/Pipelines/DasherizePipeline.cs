@@ -6,16 +6,16 @@ using System.Text;
 
 namespace SpiderSharp
 {
-    public static partial class Pipelines
-    {
-        internal static void DasherizePipeline(ref dynamic item)
-        {
-            JObject json = (JObject)item;
+    //public abstract partial class SpiderEngine
+    //{
+    //    //internal static void DasherizePipeline(ref dynamic item)
+    //    //{
+    //    //    JObject json = (JObject)item;
 
-            var renamedJson = Helpers.Json.CloneRenaming(json, name => name.Underscore().Replace("_", "-"));
+    //    //    var renamedJson = Helpers.Json.CloneRenaming(json, name => name.Underscore().Replace("_", "-"));
 
-            dynamic dyn = renamedJson;
-            item = dyn;
-        }
-    }
+    //    //    dynamic dyn = renamedJson;
+    //    //    item = dyn;
+    //    //}
+    //}
 }

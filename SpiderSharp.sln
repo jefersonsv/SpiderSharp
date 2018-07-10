@@ -15,12 +15,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{48C820DE-FE9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{008F775F-C93C-46CD-A11F-3D49CC37F47A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrapQuotes", "sample\ScrapQuotes\ScrapQuotes.csproj", "{7BDB6EF6-A536-4D0E-B6B0-45386D4926B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapQuotes", "sample\ScrapQuotes\ScrapQuotes.csproj", "{7BDB6EF6-A536-4D0E-B6B0-45386D4926B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5891474-1DCD-46DF-8739-E301F1C08181}"
 	ProjectSection(SolutionItems) = preProject
+		deploy-src.cmd = deploy-src.cmd
 		LICENSE = LICENSE
 		README.md = README.md
+		SpiderSharp.nuspec = SpiderSharp.nuspec
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{2749A786-B495-40EE-8AB8-8A87FA2428A3}"

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SpiderSharp
 {
-    public static partial class Pipelines
+    public abstract partial class SpiderEngine
     {
-        public static void SafeUrlsPipeline(dynamic item, string domain, params string[] tokens)
+        public void AddSafeUrlsPipeline(dynamic item, string domain, params string[] tokens)
         {
             JObject json = (JObject)item;
 
