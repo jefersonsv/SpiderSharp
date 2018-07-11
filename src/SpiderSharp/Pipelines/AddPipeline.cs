@@ -8,7 +8,7 @@ namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
-        public void AddPipeline(Action<dynamic> act)
+        public void AddPipeline(Func<dynamic, dynamic> act)
         {
             this.pipelines.Add(act);
         }

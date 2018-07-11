@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 
 namespace SpiderSharp
@@ -12,7 +13,11 @@ namespace SpiderSharp
         {
             this.AddPipeline(it =>
             {
-                Helpers.Json.RenameProperty((JObject)it, from, to);
+                var jobject = JObject.FromObject(it);
+                Helpers.Json.RenameProperty(jobject, from, to);
+                it = jobject;
+
+                return it;
             });
         }
     }

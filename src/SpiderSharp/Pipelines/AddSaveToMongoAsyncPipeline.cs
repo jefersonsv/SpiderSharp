@@ -23,6 +23,8 @@ namespace SpiderSharp
                 {
                     Console.WriteLine(ex.Message);
                 }
+
+                return it;
             });
         }
     }

@@ -26,6 +26,8 @@ namespace SpiderSharp
                             Console.WriteLine($"{item} => {it[item].Value}");
                     }
                 }
+
+                return it;
             });
         }
     }

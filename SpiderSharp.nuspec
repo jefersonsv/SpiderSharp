@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>SpiderSharp</id>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <authors>Jeferson Tenorio</authors>
     <owners>Jeferson Tenorio</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -24,7 +24,6 @@
     </dependencies>
   </metadata>
   <files>
-
     <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\SpiderSharp.dll" target="lib\netstandard2.0\SpiderSharp.dll" />
     <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\Data.Mongo.dll" target="lib\netstandard2.0\Data.Mongo.dll" />
     <file src=".\src\SpiderSharp\bin\Release\netstandard2.0\Data.Redis.dll" target="lib\netstandard2.0\Data.Redis.dll" />

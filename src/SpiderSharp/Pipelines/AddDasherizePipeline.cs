@@ -12,7 +12,9 @@ namespace SpiderSharp
         {
             this.AddPipeline(it =>
             {
-                Helpers.Json.Rename((JObject)it, name => name.ToString().Underscore().Replace("_", "-"));
+                JObject obj = JObject.FromObject(it);
+                Helpers.Json.Rename(obj, name => name.ToString().Underscore().Replace("_", "-"));
+                return obj;
             });
         }
     }

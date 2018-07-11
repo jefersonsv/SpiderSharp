@@ -9,9 +9,9 @@ using System.Text;
 
 namespace SpiderSharp
 {
-    public  abstract partial class SpiderEngine
+    public abstract partial class SpiderEngine
     {
-        readonly List<Action<dynamic>> pipelines = new List<Action<dynamic>>();
+        readonly List<Func<dynamic, dynamic>> pipelines = new List<Func<dynamic, dynamic>>();
         private string sourceCode;
         private string url;
         public string Cookies { get; private set; }
@@ -26,16 +26,17 @@ namespace SpiderSharp
         protected virtual void After(dynamic jObject)
         {
             // Executed after Run()
-            foreach (Action<dynamic> item in pipelines)
+            foreach (Func<dynamic, dynamic> item in pipelines)
             {
-                item(jObject);
+                Console.WriteLine("Executing Pipeline > " + item.Method.Name.ToString());
+                jObject = item(jObject);
             }
         }
 
         protected virtual void Before()
         {
             // Executed before Run()
-            System.Console.WriteLine("Running Middlewares");
+            System.Console.WriteLine("Executing Middlewares");
 
             Ensure.That(url).IsNotNullOrWhiteSpace();
 

@@ -9,6 +9,7 @@ Web Crawling and Scraping Framework
 * Helper to rename json property name token
 * Helper to get or delete N itens of collection
 * Common regular expression to grab data
+* Extract youtube video metadata
 
 ## Regular Expression Library
 There are some **Regex** done to grab data
@@ -55,6 +56,19 @@ This pipeline is used to add a http prefix to any scraped link data because some
 ```C#
 "href="image.jpg" => "http://user-domain.com/image.jpg"
 ```
+
+### Youtube Detail Metadata Extractor 
+> Call .AddYoutubeDetailPipeline() 
+
+This pipeline is used to extract information of metadata from youtube video url. The attributes like: Id, Author, UploadDate, Title, Description, Thumbnails, Duration, Keywords, Statistics, StreamMediaInfo and ClosedCaptionInfo can be extract from youtube video url.
+
+* Retrieves information about videos, playlists, channels, media streams and closed caption tracks
+* Handles all types of videos, including legacy, signed, restricted, non-embeddable and unlisted videos
+* Works with media streams of all types -- muxed, embedded adaptive, dash adaptive
+* Parses and downloads closed caption tracks
+* Provides static methods to validate IDs and to parse IDs from URLs
+
+__You must specify the field name that will receive the metadata information__
 
 ### Custom Pipeline
 > Call .AddPipeline(**Action**)
@@ -129,3 +143,9 @@ The project include a simple quotes scrap of http://quotes.toscrape.com
 ## Scrap Shell
 
 This application can be used to inspect and debug a spider
+
+## Thanks to
+
+* [AngleSharp](https://github.com/AngleSharp/AngleSharp) - The ultimate angle brackets parser library parsing HTML5, MathML, SVG and CSS to construct a DOM based on the official W3C specifications
+* [HtmlAgilityPack](https://github.com/zzzprojects/html-agility-pack) - Html Agility Pack (HAP)
+* [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) - The ultimate dirty YouTube library

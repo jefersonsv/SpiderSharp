@@ -1,45 +1,57 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 
 namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
-        public void AddSafeUrlsPipeline(dynamic item, string domain, params string[] tokens)
+        public void AddSafeUrlsPipeline(string domain, params string[] tokens)
         {
-            JObject json = (JObject)item;
-
-            foreach (var token in tokens)
+            this.AddPipeline(it =>
             {
-                JProperty prop = json.Property(token);
+                JObject json = JObject.FromObject(it);
 
-                if (prop != null && prop.HasValues)
+                foreach (var token in tokens)
                 {
-                    string link = prop.Value.ToString().ToLower();
+                    JProperty prop = json.Property(token);
 
-                    if (!string.IsNullOrEmpty(link))
+                    if (prop != null && prop.HasValues)
                     {
-                        domain = domain.EndsWith("/") ? domain : domain + "/";
+                        string link = prop.Value.ToString().ToLower();
 
-                        // add schema/domain/port if needed
-                        if (!link.StartsWith(domain.ToLower().Trim()))
+                        if (!string.IsNullOrEmpty(link))
                         {
-                            link = domain + prop.Value.ToString();
+                            domain = domain.EndsWith("/") ? domain : domain + "/";
 
-                            Uri uri = null;
-                            if (Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out uri))
+                            // add schema/domain/port if needed
+                            if (!link.StartsWith(domain.ToLower().Trim()))
                             {
-                                prop.Value = uri.ToString();
+                                var concat = prop.Value.ToString();
+                                if (concat.StartsWith("/"))
+                                {
+                                    concat = concat.Substring(1);
+                                }
+
+                                link = domain + concat;
+
+                                Uri uri = null;
+                                if (Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out uri))
+                                {
+                                    prop.Value = uri.ToString();
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            dynamic dyn = json;
-            item = dyn;
+                dynamic dyn = json;
+                it = dyn;
+
+                return dyn;
+            });
         }
     }
 }
