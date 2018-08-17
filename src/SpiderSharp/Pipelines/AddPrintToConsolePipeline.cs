@@ -15,7 +15,7 @@ namespace SpiderSharp
             {
                 if (fields == null || fields.Count() == 0)
                 {
-                    JObject obj = JObject.FromObject(it);
+                    JToken obj = JToken.FromObject(it);
                     Console.WriteLine(obj);
                 }
                 else

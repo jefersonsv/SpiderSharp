@@ -7,12 +7,14 @@ namespace HttpRequester
     {
         readonly Data.Redis.RedisConnection redis;
         readonly Requester requester;
+        TimeSpan? duration;
         public string Cookies { get; private set; }
 
-        public CachedRequester(string redisConnectionString, EnumHttpProvider httpProvider)
+        public CachedRequester(string redisConnectionString, EnumHttpProvider httpProvider, TimeSpan? duration)
         {
             requester = new Requester(httpProvider);
             redis = new Data.Redis.RedisConnection(redisConnectionString);
+            this.duration = duration;
         }
 
         public async Task<string> GetContentAsync(string url)
@@ -26,7 +28,11 @@ namespace HttpRequester
                 Cookies = requester.Cookies;
                 if (!string.IsNullOrEmpty(response))
                 {
-                    await redis.DB.StringSetAsync(key, response, DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow);
+                    TimeSpan dur = DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow;
+                    if (duration == null)
+                        duration = dur;
+
+                    await redis.DB.StringSetAsync(key, response, duration);
                     return response;
                 }
             }

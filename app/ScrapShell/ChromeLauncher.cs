@@ -21,10 +21,15 @@ namespace ScrapShell
         {
             string chromeAppFileName = ChromeAppFileName;
             if (string.IsNullOrEmpty(chromeAppFileName))
-            {
                 throw new TypeAccessException("Could not find chrome.exe!");
-            }
-            Process.Start(chromeAppFileName, "--disable-javascript " + url);
+            
+            Process.Start(chromeAppFileName, "--disable-javascript --disabled --no-network-profile-warning --disable-renderer-backgrounding --disable-background-timer-throttling --start-maximized --disable-background-networking --disable-javascript-harmony-shipping --disable-translate --incognito " + url);
+        }
+
+        public static void OpenFile(string fileName)
+        {
+            var file = $"file:///{fileName.Replace("\\", "/")}";
+            OpenLink(file);
         }
     }
 }

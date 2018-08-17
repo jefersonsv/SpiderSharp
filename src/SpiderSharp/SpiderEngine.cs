@@ -6,21 +6,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Dynamic;
 
 namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
+        public DownloaderMiddleware downloader = null;
         readonly List<Func<dynamic, dynamic>> pipelines = new List<Func<dynamic, dynamic>>();
         private string sourceCode;
         private string url;
-        public string Cookies { get; private set; }
+        public string Cookies { get; set; }
         protected Nodes node;
+        protected JToken Json { get; set; }
         public string SpiderName { get; private set; }
+        protected dynamic result = null;
 
         protected SpiderEngine()
         {
             this.SpiderName = this.GetType().Name.Underscore().Replace("_", "-");
+        }
+
+        public void SetDownloader(DownloaderMiddleware requester)
+        {
+            this.downloader = requester;
         }
 
         protected virtual void After(dynamic jObject)
@@ -39,21 +48,22 @@ namespace SpiderSharp
             System.Console.WriteLine("Executing Middlewares");
 
             Ensure.That(url).IsNotNullOrWhiteSpace();
+            // Ensure.That(downloader).IsNotNull();
 
-            // Getting Url
-            DownloaderMiddleware download = new DownloaderMiddleware()
+            if (downloader == null)
             {
-                RedisConnectrionstring = GlobalSettings.RedisConnectionString,
-                UseRedisCache = GlobalSettings.UseRedisCache,
-                HttpProvider = GlobalSettings.HttpProvider,
-                DefaultHeaders = GlobalSettings.DefaultHeaders
-            };
+                downloader = new DownloaderMiddleware();
+                downloader.HttpProvider = HttpRequester.EnumHttpProvider.HttpClient;
+            }
 
-            sourceCode = download.RunAsync(url).Result;
-            Cookies = download.Cookies;
+            sourceCode = this.downloader.RunAsync(url).Result;
+            Cookies = this.downloader.Cookies;
         }
 
-        protected abstract string FollowPage();
+        protected virtual string FollowPage()
+        {
+            return null;
+        }
 
         // Implement to execute code
         protected abstract IEnumerable<dynamic> OnRun();
@@ -75,9 +85,28 @@ namespace SpiderSharp
                 System.Console.WriteLine("Starting... " + this.SpiderName);
                 Before();
 
-                this.node = new Nodes(sourceCode);
+                // Verify if is Html or Json
+                try
+                {
+                    // check if json
+                    this.Json = JToken.Parse(sourceCode);
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                try
+                {
+                    this.node = new Nodes(sourceCode);
+                }
+                catch (Exception ex)
+                {
+
+                }
 
                 System.Console.WriteLine("Running... " + this.SpiderName);
+                result = new ExpandoObject();
                 var obj = OnRun();
 
                 foreach (var item in obj)

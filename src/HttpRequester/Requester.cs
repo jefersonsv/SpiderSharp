@@ -7,12 +7,13 @@ using System.Net;
 using System.Net.Http;
 using AngleSharp;
 using System.IO;
+using System.Diagnostics;
 
 namespace HttpRequester
 {
     public class Requester
     {
-        public string Cookies { get; private set; }
+        public string Cookies { get; set; }
         public bool UseCache { get; set; }
         public string RedisConnectionString { get; set; }
         public EnumHttpProvider HttpProvider { get; private set; }
@@ -21,11 +22,13 @@ namespace HttpRequester
         /// <summary>
         /// http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/?utm_source=csharpdigest&utm_medium=email&utm_campaign=featured
         /// </summary>
-        private readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
-        private readonly BetterWebClient betterWebClient = new BetterWebClient();
-        private readonly CookieWebClient cookieWebClient = new CookieWebClient();
-        private readonly WebClient webClient = new WebClient();
-        private readonly IBrowsingContext angleSharpClient = null;
+        public readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
+        public readonly BetterWebClient betterWebClient = new BetterWebClient();
+        public readonly CookieWebClient cookieWebClient = new CookieWebClient();
+        public readonly WebClient webClient = new WebClient();
+        public readonly IBrowsingContext angleSharpClient = null;
+        public readonly ChromeHeadlessClient chromeHeadlessClient = new ChromeHeadlessClient();
+        public readonly ChromeHeadlessPersistentClient chromeHeadlessPersistentClient = new ChromeHeadlessPersistentClient();
 
         public Requester(EnumHttpProvider httpProvider)
         {
@@ -33,7 +36,10 @@ namespace HttpRequester
 
             // Anglesharp
             var requester = new AngleSharp.Network.Default.HttpRequester();
-            requester.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
+
+            if (!DefaultHeaders.ContainsKey("User-Agent"))
+                requester.Headers["User-Agent"] = this.spiderSharpUserAgent;
+
             var configuration = Configuration.Default.WithDefaultLoader(loader =>
                 {
                     loader.IsNavigationEnabled = true;
@@ -59,21 +65,8 @@ namespace HttpRequester
 
                 case EnumHttpProvider.AngleSharp:
 
-                    //using (var memoryStream = new MemoryStream())
-                    //using (var tw = new StreamWriter(memoryStream))
-                    //{
-                    //    var formatter = new AngleSharp.Xml.XmlMarkupFormatter();
-                    //    var d1 = await angleSharpClient.OpenAsync(url);
-                    //    d1.ToHtml(tw, formatter);
-                    //    tw.Flush();
-                    //    memoryStream.Flush();
-
-                    //    return Encoding.Default.GetString(memoryStream.ToArray());
-                    //}
-
                     var browse = await angleSharpClient.OpenAsync(url);
                     return browse.Source.Text;
-                    
 
                 case EnumHttpProvider.BetterWebClient:
 
@@ -86,13 +79,25 @@ namespace HttpRequester
                     var data2 = await cookieWebClient.DownloadDataTaskAsync(uri);
                     Cookies = cookieWebClient.CookieContainer.GetCookieHeader(uri);
                     return Encoding.Default.GetString(data2);
+
+                case EnumHttpProvider.ChromeHeadless:
+                    return await chromeHeadlessClient.GetContentAsync(uri.ToString());
+
+                case EnumHttpProvider.ChromeHeadlessPersistent:
+                    return await chromeHeadlessPersistentClient.GoAndGetContentAsync(uri.ToString());
             }
 
             throw new NotImplementedException();
         }
 
+        string spiderSharpUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0";
+
         void PublishHeaders()
         {
+            // Check for
+            //if (!DefaultHeaders.ContainsKey("User-Agent"))
+                //Mozilla / 5.0(Windows NT 10.0; Win64; x64; rv: 61.0) Gecko / 20100101 Firefox / 61.0
+
             switch (this.HttpProvider)
             {
                 case EnumHttpProvider.HttpClient:
@@ -100,7 +105,14 @@ namespace HttpRequester
                     {
                         this.httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
                     }
-                    break;
+
+                    if (!DefaultHeaders.ContainsKey("User-Agent"))
+                        this.httpClient.DefaultRequestHeaders.Add("User-Agent", this.spiderSharpUserAgent);
+
+                    if (!DefaultHeaders.ContainsKey("Cookie"))
+                        this.httpClient.DefaultRequestHeaders.Add("Cookie", this.Cookies);
+
+                break;
 
 
                 case EnumHttpProvider.BetterWebClient:
@@ -108,6 +120,13 @@ namespace HttpRequester
                     {
                         this.betterWebClient.Headers.Add(item.Key, item.Value);
                     }
+
+                    if (!DefaultHeaders.ContainsKey("User-Agent"))
+                        this.betterWebClient.Headers.Add("User-Agent", this.spiderSharpUserAgent);
+
+                    if (!DefaultHeaders.ContainsKey("Cookie"))
+                        this.betterWebClient.Headers.Add("Cookie", this.Cookies);
+
                     break;
 
                 case EnumHttpProvider.CookieWebClient:
@@ -115,8 +134,15 @@ namespace HttpRequester
                     {
                         this.cookieWebClient.Headers.Add(item.Key, item.Value);
                     }
+
+                    if (!DefaultHeaders.ContainsKey("User-Agent"))
+                        this.cookieWebClient.Headers.Add("User-Agent", this.spiderSharpUserAgent);
+
+                    if (!DefaultHeaders.ContainsKey("Cookie"))
+                        this.cookieWebClient.Headers.Add("Cookie", this.Cookies);
+
                     break;
-            }
+                }
         }
 
         /// <summary>

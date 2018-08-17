@@ -50,6 +50,11 @@ namespace SpiderSharp
             return this.GetAttribute(cssSelector, "class");
         }
 
+        public string GetHref()
+        {
+            return this.doc.Attributes["href"].Value;
+        }
+
         public string GetHref(string cssSelector)
         {
             return GetAttribute(cssSelector, "href");
@@ -59,6 +64,16 @@ namespace SpiderSharp
         {
             var node = doc.QuerySelector(cssSelector);
             return node?.InnerText;
+        }
+
+        public string GetInnerText()
+        {
+            return doc?.InnerText;
+        }
+
+        public string GetHtml()
+        {
+            return doc.OwnerDocument.DocumentNode.OuterHtml;
         }
 
         public IEnumerable<string> GetLinksAll(string cssSelector)
@@ -99,6 +114,12 @@ namespace SpiderSharp
         {
             return doc.QuerySelectorAll(cssSelector)
                 .Select(s => new Nodes(s));
+        }
+
+        public Nodes GetNode(string cssSelector)
+        {
+            var node = doc.QuerySelector(cssSelector);
+            return new Nodes(node);
         }
     }
 }
