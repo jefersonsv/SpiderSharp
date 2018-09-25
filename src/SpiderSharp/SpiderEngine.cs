@@ -1,7 +1,7 @@
 ﻿using EnsureThat;
 using Humanizer;
 using Newtonsoft.Json.Linq;
-using Data.Mongo;
+using Data.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +21,7 @@ namespace SpiderSharp
         protected JToken Json { get; set; }
         public string SpiderName { get; private set; }
         protected dynamic result = null;
+
 
         protected SpiderEngine()
         {
@@ -53,7 +54,8 @@ namespace SpiderSharp
             if (downloader == null)
             {
                 downloader = new DownloaderMiddleware();
-                downloader.HttpProvider = HttpRequester.EnumHttpProvider.HttpClient;
+                downloader.HttpProvider = GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient;
+                downloader.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
             }
 
             sourceCode = this.downloader.RunAsync(url).Result;
@@ -111,7 +113,15 @@ namespace SpiderSharp
 
                 foreach (var item in obj)
                 {
-                    After(item);
+                    try
+                    {
+                        After(item);
+                        // OK
+                    }
+                    catch (Exception ex)
+                    {
+                        this.OnError(ex);
+                    }
                 }
 
                 System.Console.WriteLine("Stopping... " + this.SpiderName);
@@ -119,6 +129,11 @@ namespace SpiderSharp
                 if (HasFollowPage())
                     this.SetUrl(FollowPage());
             } while (this.HasFollowPage());
+        }
+
+        protected virtual void OnError(Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
         }
 
         public void SetUrl(string url)

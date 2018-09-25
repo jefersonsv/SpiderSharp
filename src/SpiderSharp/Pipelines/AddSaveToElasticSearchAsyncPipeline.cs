@@ -1,4 +1,4 @@
-﻿using Data.Mongo;
+﻿using Data.ElasticSearch;
 using Humanizer;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,15 +9,16 @@ namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
-        public void AddSaveToMongoAsyncPipeline(string collection, string primaryKeyField)
+        public void AddSaveToElasticSearchAsyncPipeline(string type, string primaryKeyField)
         {
             this.AddPipeline(it =>
             {
                 try
                 {
-                    var mongo = new MongoConnection(GlobalSettings.MongoDatabase, GlobalSettings.MongoConnectionString);
-                    var pkValue = (string)it[primaryKeyField];
-                    mongo.UpdateDefinition(collection, primaryKeyField, pkValue, it.ToString());
+                    var elastic = new ElasticConnection(GlobalSettings.ElasticSearchIndex, GlobalSettings.ElasticSearchConnectionString);
+                    JObject obj = JObject.Parse(it.ToString());
+                    var id = (string)it[primaryKeyField];
+                    elastic.Index(type, id, obj.ToString());
                 }
                 catch (Exception ex)
                 {

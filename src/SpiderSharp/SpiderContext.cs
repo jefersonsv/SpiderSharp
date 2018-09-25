@@ -6,24 +6,24 @@ using Newtonsoft.Json.Linq;
 
 namespace SpiderSharp
 {
-    public sealed class ResponseContext
+    public sealed class SpiderContext
     {
-        public dynamic Data { get; }
-        public Exception Error { get; }
+        public dynamic Data { get; set;  }
+        public Exception Error { get; set;  }
         public bool HasError { get { return this.Error != null; } }
 
-        public ResponseContext()
+        public SpiderContext()
         {
             this.Data = JObject.FromObject(new ExpandoObject());
         }
 
-        public ResponseContext(dynamic data)
+        public SpiderContext(dynamic data)
         {
             //this.Data = JObject.FromObject(data);
             this.Data = data;
         }
 
-        public ResponseContext(dynamic data, Exception exception)
+        public SpiderContext(dynamic data, Exception exception)
         {
             this.Data = data;
             this.Error = exception;

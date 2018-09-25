@@ -1,9 +1,10 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MONGO = MongoDB.Driver;
 
-namespace Data.Mongo
+namespace Data.MongoDB
 {
     public class MongoConnection
     {
@@ -13,7 +14,7 @@ namespace Data.Mongo
         public MongoConnection(string database, string mongodbConnectionString)
         {
             var settings = GetSettingsBy(mongodbConnectionString);
-            client = new MongoDB.Driver.MongoClient(settings);
+            client = new MONGO.MongoClient(settings);
 
             DB = client.GetDatabase(database);
         }

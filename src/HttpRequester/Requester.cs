@@ -22,33 +22,64 @@ namespace HttpRequester
         /// <summary>
         /// http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/?utm_source=csharpdigest&utm_medium=email&utm_campaign=featured
         /// </summary>
-        public readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
-        public readonly BetterWebClient betterWebClient = new BetterWebClient();
-        public readonly CookieWebClient cookieWebClient = new CookieWebClient();
-        public readonly WebClient webClient = new WebClient();
+        public readonly System.Net.Http.HttpClient httpClient = null;
+        public readonly BetterWebClient betterWebClient = null;
+        public readonly CookieWebClient cookieWebClient = null;
+        public readonly WebClient webClient = null;
         public readonly IBrowsingContext angleSharpClient = null;
-        public readonly ChromeHeadlessClient chromeHeadlessClient = new ChromeHeadlessClient();
-        public readonly ChromeHeadlessPersistentClient chromeHeadlessPersistentClient = new ChromeHeadlessPersistentClient();
+        public readonly ChromeHeadlessClient chromeHeadlessClient = null;
+        public readonly ChromeHeadlessPersistentClient chromeHeadlessPersistentClient = null;
 
         public Requester(EnumHttpProvider httpProvider)
         {
             this.HttpProvider = httpProvider;
 
-            // Anglesharp
-            var requester = new AngleSharp.Network.Default.HttpRequester();
+            if (httpProvider == EnumHttpProvider.AngleSharp)
+            {
+                // Anglesharp
+                var requester = new AngleSharp.Network.Default.HttpRequester();
 
-            if (!DefaultHeaders.ContainsKey("User-Agent"))
-                requester.Headers["User-Agent"] = this.spiderSharpUserAgent;
+                if (!DefaultHeaders.ContainsKey("User-Agent"))
+                    requester.Headers["User-Agent"] = this.spiderSharpUserAgent;
 
-            var configuration = Configuration.Default.WithDefaultLoader(loader =>
+                var configuration = Configuration.Default.WithDefaultLoader(loader =>
                 {
                     loader.IsNavigationEnabled = true;
                     loader.IsResourceLoadingEnabled = false;
                 },
-                requesters: new[] { requester }
-            );
+                    requesters: new[] { requester }
+                );
 
-            this.angleSharpClient = AngleSharp.BrowsingContext.New(configuration);
+                this.angleSharpClient = AngleSharp.BrowsingContext.New(configuration);
+            }
+            else if (httpProvider == EnumHttpProvider.BetterWebClient)
+            {
+                this.betterWebClient = new BetterWebClient();
+            }
+            else if (httpProvider == EnumHttpProvider.ChromeHeadless)
+            {
+                this.chromeHeadlessClient = new ChromeHeadlessClient();
+            }
+            else if (httpProvider == EnumHttpProvider.ChromeHeadlessPersistent)
+            {
+                this.chromeHeadlessPersistentClient = new ChromeHeadlessPersistentClient();
+            }
+            else if (httpProvider == EnumHttpProvider.CookieWebClient)
+            {
+                this.cookieWebClient = new CookieWebClient();
+            }
+            else if (httpProvider == EnumHttpProvider.HttpClient)
+            {
+                this.httpClient = new System.Net.Http.HttpClient();
+            }
+            else if (httpProvider == EnumHttpProvider.WebClient)
+            {
+                this.webClient = new WebClient();
+            }
+            else
+            {
+                throw new ArgumentNullException("httpProvider");
+            }
         }
 
         public async Task<string> GetContentAsync(string url)

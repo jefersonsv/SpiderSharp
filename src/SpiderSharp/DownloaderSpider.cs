@@ -21,14 +21,15 @@ namespace SpiderSharp
 
         public async Task<string> RunAsync(string url)
         {
+            client = client ?? new HttpRequester.Requester(HttpProvider);
             if (UseRedisCache)
             {
                 cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(RedisConnectrionstring, HttpProvider, Duration);
-                return client.GetContentAsync(url).Result;
+                var content = await client.GetContentAsync(url);
+                return content;
             }
             else
             {
-                client  = client ?? new HttpRequester.Requester(HttpProvider);
                 client.DefaultHeaders = DefaultHeaders;
                 client.Cookies = this.Cookies;
                 var resp = client.GetContentAsync(url).Result;

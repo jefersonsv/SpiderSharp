@@ -26,6 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Data.ElasticSearch\Data.ElasticSearch.csproj" />
+    <ProjectReference Include="..\Data.MongoDB\Data.MongoDB.csproj" />
     <ProjectReference Include="..\HttpRequester\HttpRequester.csproj" />
   </ItemGroup>
 
