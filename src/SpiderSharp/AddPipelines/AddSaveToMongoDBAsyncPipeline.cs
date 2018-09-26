@@ -7,10 +7,13 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunSaveToMongoDBAsyncPipeline in SpiderContext")]
         public void AddSaveToMongoDBAsyncPipeline(string collection, string primaryKeyField)
         {
+            
             this.AddPipeline(it =>
             {
                 try

@@ -7,8 +7,11 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+
+        [Obsolete("Use RunSaveToElasticSearchAsyncPipeline in SpiderContext")]
         public void AddSaveToElasticSearchAsyncPipeline(string type, string primaryKeyField)
         {
             this.AddPipeline(it =>

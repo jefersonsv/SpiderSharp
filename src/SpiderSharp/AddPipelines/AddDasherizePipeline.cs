@@ -6,8 +6,10 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunDasherizePipeline in SpiderContext")]
         public void AddDasherizePipeline()
         {
             this.AddPipeline(it =>

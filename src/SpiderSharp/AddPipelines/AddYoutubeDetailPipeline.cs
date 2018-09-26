@@ -12,8 +12,10 @@ using YoutubeExplode.Models.MediaStreams;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunYoutubeDetailPipeline in SpiderContext")]
         public void AddYoutubeDetailPipeline(string urlField, string detailField, string videoField, string streamField, string captionField)
         {
             this.AddPipeline(it =>

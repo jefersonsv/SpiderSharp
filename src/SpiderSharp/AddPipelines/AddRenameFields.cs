@@ -7,8 +7,10 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunRenameFields in SpiderContext")]
         public void AddRenameFields(string from, string to)
         {
             this.AddPipeline(it =>

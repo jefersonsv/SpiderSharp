@@ -7,8 +7,10 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunPrintToConsolePipeline in SpiderContext")]
         public void AddPrintToConsolePipeline(params string[] fields)
         {
             this.AddPipeline(it =>

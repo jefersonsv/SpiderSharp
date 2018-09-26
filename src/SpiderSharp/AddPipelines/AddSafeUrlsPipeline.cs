@@ -6,8 +6,10 @@ using System.Text;
 
 namespace SpiderSharp
 {
+    
     public abstract partial class SpiderEngine
     {
+        [Obsolete("Use RunSafeUrlsPipeline in SpiderContext")]
         public void AddSafeUrlsPipeline(string domain, params string[] tokens)
         {
             this.AddPipeline(it =>

@@ -22,6 +22,8 @@ namespace SpiderSharp
         public string SpiderName { get; private set; }
         protected dynamic result = null;
 
+        protected SpiderContext ct;
+
 
         protected SpiderEngine()
         {
@@ -68,7 +70,7 @@ namespace SpiderSharp
         }
 
         // Implement to execute code
-        protected abstract IEnumerable<dynamic> OnRun();
+        protected abstract IEnumerable<SpiderContext> OnRun();
         
         public string GetUrl()
         {
@@ -109,31 +111,35 @@ namespace SpiderSharp
 
                 System.Console.WriteLine("Running... " + this.SpiderName);
                 result = new ExpandoObject();
+                ct = new SpiderContext();
                 var obj = OnRun();
 
                 foreach (var item in obj)
                 {
-                    try
-                    {
-                        After(item);
-                        // OK
-                    }
-                    catch (Exception ex)
-                    {
-                        this.OnError(ex);
-                    }
+                    ct = new SpiderContext();
+
+                    if (item.Error == null)
+                        //After(item.Data);
+                        SuccessPipeline(item);
+                    else
+                        ErrorPipeline(item);
                 }
 
-                System.Console.WriteLine("Stopping... " + this.SpiderName);
+                System.Console.WriteLine("Finish... " + this.SpiderName);
 
                 if (HasFollowPage())
                     this.SetUrl(FollowPage());
             } while (this.HasFollowPage());
         }
 
-        protected virtual void OnError(Exception ex)
+        protected virtual void SuccessPipeline(SpiderContext context)
         {
-            Console.WriteLine(ex.ToString());
+            Console.WriteLine("Done Item");
+        }
+
+        protected virtual void ErrorPipeline(SpiderContext context)
+        {
+            Console.WriteLine(context.Error.ToString());
         }
 
         public void SetUrl(string url)
