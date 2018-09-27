@@ -9,7 +9,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunSaveToElasticSearchAsyncPipeline(string type, string primaryKeyField)
+        public void RunSaveToElasticSearchPipeline(string type, string primaryKeyField)
         {
             var it = this.Data;
             try

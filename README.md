@@ -13,10 +13,11 @@ Web Crawling and Scraping Framework
     - [2.4. Pipelines](#24-pipelines)
         - [2.4.1. Dasherize Pipeline](#241-dasherize-pipeline)
         - [2.4.2. Print to Console Pipeline](#242-print-to-console-pipeline)
-        - [2.4.3. Save to Mongo Pipeline](#243-save-to-mongo-pipeline)
+        - [2.4.3. Save to MongoDB Pipeline](#243-save-to-mongodb-pipeline)
         - [2.4.4. Safe Urls Pipeline](#244-safe-urls-pipeline)
         - [2.4.5. Youtube Detail Metadata Extractor](#245-youtube-detail-metadata-extractor)
         - [2.4.6. Custom Pipeline](#246-custom-pipeline)
+		- [2.4.7. Save to ElasticSearch](#247-save-to-elasticsearch-pipeline)
     - [2.5. Getting started](#25-getting-started)
     - [2.6. To run the spider](#26-to-run-the-spider)
     - [2.7. Sample](#27-sample)
@@ -56,7 +57,7 @@ Each provider has your own features. You can choose anyone to get a resource
 Pipeline get a data and transform sending the result to next pipeline. Use can use how much pipelines you want.
 
 ### 2.4.1. Dasherize Pipeline 
-> Call .AddDasherizePipeline() 
+> Call .RunDasherizePipeline() 
 
 This pipeline is used to normalize an object transforming the json key fields like:
 
@@ -67,19 +68,19 @@ This pipeline is used to normalize an object transforming the json key fields li
 
 ### 2.4.2. Print to Console Pipeline
 
-> Call .AddPrintToConsolePipeline(**fields**)
+> Call .RunPrintToConsolePipeline(**fields**)
 
 This pipeline is used to print some scraped data to stdout. The **fields** parameter is optional
 
-### 2.4.3. Save to Mongo Pipeline
+### 2.4.3. Save to MongoDB Pipeline
 
-> Call .AddSaveToMongoAsyncPipeline(**collection**, **unique-id-filed**);
+> Call .RunSaveToMongoAsyncPipeline(**collection**, **unique-id-filed**);
 
 This pipeline is used to do **UpSert** data on MongoDB. The **collection** parameter define the collection name to save and **unique-id-field** define the primary key of document to choose if the operation will be Insert or Update
 
 ### 2.4.4. Safe Urls Pipeline
 
-> Call AddSafeUrlsPipeline(result, prefixUrl, fieldArgs[])
+> Call .RunSafeUrlsPipeline(result, prefixUrl, fieldArgs[])
 
 This pipeline is used to add a http prefix to any scraped link data because sometimes the href attributes says only the path and hide the schema://host:port like:
 
@@ -89,7 +90,7 @@ This pipeline is used to add a http prefix to any scraped link data because some
 
 ### 2.4.5. Youtube Detail Metadata Extractor
 
-> Call .AddYoutubeDetailPipeline()
+> Call .RunYoutubeDetailPipeline()
 
 This pipeline is used to extract information of metadata from youtube video url. The attributes like: Id, Author, UploadDate, Title, Description, Thumbnails, Duration, Keywords, Statistics, StreamMediaInfo and ClosedCaptionInfo can be extract from youtube video url.
 
@@ -103,16 +104,23 @@ __You must specify the field name that will receive the metadata information__
 
 ### 2.4.6. Custom Pipeline
 
-> Call .AddPipeline(**Action**)
+> Call .RunPipeline(**Action**)
 
 This pipeline is used to do any custom steps like:
 
 ```C#
-spider.AddPipeline(result =>
+spider.RunPipeline(result =>
 {
     result.scraped = DateTime.Now;
 }
 ```
+
+### 2.4.7. Save to ElasticSearch
+
+> Call .RunSaveToElasticSearchPipeline(**type**, **unique-id-filed**);
+
+This pipeline is used to **Index** data on ElasticSearch. The **type** parameter define the type name to save and **unique-id-field** define the primary key of document
+
 
 ## 2.5. Getting started 
 
@@ -145,12 +153,23 @@ public class ScrapQuotesSpider : SpiderEngine, ISpiderEngine
             var quotes = this.node.SelectNodes("div.quote");
             foreach (var item in quotes)
             {
-                json.text = item.GetInnerText("span.text");
-                json.author = item.GetInnerText("small.author");
-                json.tags = item.SelectInnerText("div.tags > a.tag");
-
-                yield return json;
+                yield return this.Fetch(() => {
+                    ct.Data.text = item.GetInnerText("span.text");
+                    ct.Data.author = item.GetInnerText("small.author");
+                    ct.Data.tags = item.SelectInnerText("div.tags > a.tag");
+                });
             }
+        }
+
+		protected override void SuccessPipeline(SpiderContext context)
+        {
+            context.RunPrintToConsolePipeline();
+        }
+
+        protected override void ErrorPipeline(SpiderContext context)
+        {
+            context.RunEmbedMetadata();
+            context.RunPrintToConsolePipeline();
         }
     }
 
@@ -164,7 +183,6 @@ public class ScrapQuotesSpider : SpiderEngine, ISpiderEngine
 
 ```c#
 ScrapQuotesSpider spider = new ScrapQuotesSpider();
-spider.AddPrintToConsolePipeline();
 spider.Run();
 ```
 
