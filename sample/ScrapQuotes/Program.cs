@@ -11,7 +11,6 @@ namespace ScrapQuotes
             var uol = client.GetContentAsync("https://www.uol.com.br").Result;
 
             ScrapQuotesSpider spider = new ScrapQuotesSpider();
-            spider.AddPrintToConsolePipeline();
             spider.Run();
         }
     }

@@ -22,25 +22,13 @@ namespace ScrapQuotes
         {
             var quotes = this.node.SelectNodes("div.quote");
 
-            var idx = 0;
             foreach (var item in quotes)
             {
-                try
-                {
+                yield return this.Fetch(() => {
                     ct.Data.text = item.GetInnerText("span.text");
-
-                    if (idx == 1)
-                        throw new Exception("error occour");
                     ct.Data.author = item.GetInnerText("small.author");
                     ct.Data.tags = item.SelectInnerText("div.tags > a.tag");
-                }
-                catch (Exception ex)
-                {
-                    ct.Error = ex;
-                }
-
-                idx++;
-                yield return ct;
+                });
             }
         }
 
@@ -51,7 +39,7 @@ namespace ScrapQuotes
 
         protected override void ErrorPipeline(SpiderContext context)
         {
-            context.RunEmbedException();
+            context.RunEmbedMetadata();
             context.RunPrintToConsolePipeline();
         }
     }

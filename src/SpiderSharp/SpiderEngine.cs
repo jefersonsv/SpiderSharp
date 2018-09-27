@@ -82,6 +82,20 @@ namespace SpiderSharp
             return !string.IsNullOrEmpty(this.FollowPage());
         }
 
+        public dynamic Fetch(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                ct.Error = ex;
+            }
+
+            return ct;
+        }
+
         public void Run()
         {
             do
@@ -112,14 +126,17 @@ namespace SpiderSharp
                 System.Console.WriteLine("Running... " + this.SpiderName);
                 result = new ExpandoObject();
                 ct = new SpiderContext();
+                ct.Url = this.url;
+
                 var obj = OnRun();
 
                 foreach (var item in obj)
                 {
                     ct = new SpiderContext();
+                    ct.Url = this.url;
 
+                    // After(item.Data);
                     if (item.Error == null)
-                        //After(item.Data);
                         SuccessPipeline(item);
                     else
                         ErrorPipeline(item);
