@@ -47,9 +47,7 @@ namespace SpiderSharp
             }
 
             dynamic dyn = json;
-            it = dyn;
-
-                
+            this.Data = dyn;
         }
     }
 }

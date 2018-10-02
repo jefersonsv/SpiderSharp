@@ -25,14 +25,14 @@ namespace SpiderSharp
             if (UseRedisCache)
             {
                 cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(RedisConnectrionstring, HttpProvider, Duration);
-                var content = await client.GetContentAsync(url);
+                var content = await cachedRequester.GetContentAsync(url);
                 return content;
             }
             else
             {
                 client.DefaultHeaders = DefaultHeaders;
                 client.Cookies = this.Cookies;
-                var resp = client.GetContentAsync(url).Result;
+                var resp = await client.GetContentAsync(url);
                 Cookies = client.Cookies;
                 return resp;
             }

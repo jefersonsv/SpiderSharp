@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace HttpRequester
 {
@@ -32,13 +33,15 @@ namespace HttpRequester
                     if (duration == null)
                         duration = dur;
 
-                    await redis.DB.StringSetAsync(key, response, duration);
+                    var ret = await redis.DB.StringSetAsync(key, response, duration);
+                    Log.Debug("Redis saved - Key: {key} Result: {ret}", key, ret);
                     return response;
                 }
             }
             else
             {
                 // return cached
+                Log.Debug("Cached: {key}", key);
                 return source.ToString();
             }
 

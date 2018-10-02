@@ -7,6 +7,20 @@ namespace SpiderSharp.Helpers
 {
     public static class Json
     {
+        public static JToken TryParse(string content)
+        {
+            try
+            {
+                // check if json
+                return JToken.Parse(content);
+            }
+            catch
+            {
+
+            }
+
+            return null;
+        }
         public static JToken CloneRenaming(JToken json, Func<string, string> map)
         {
             var prop = json as JProperty;

@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Serilog;
 
 namespace SpiderSharp
 {
@@ -14,20 +17,35 @@ namespace SpiderSharp
     {
         public DownloaderMiddleware downloader = null;
         readonly List<Func<dynamic, dynamic>> pipelines = new List<Func<dynamic, dynamic>>();
-        private string sourceCode;
-        private string url;
+        string sourceCode;
+        string url;
+        bool nofollow;
+
         public string Cookies { get; set; }
         protected Nodes node;
         protected JToken Json { get; set; }
         public string SpiderName { get; private set; }
-        protected dynamic result = null;
+
+        private Dictionary<string, object> ViewBag = new Dictionary<string, object>();
+
+        public void AddBag(string key, string value)
+        {
+            ViewBag.Add(key, value);
+            if (ct != null)
+                ct.Bag[key] = value;
+        }
 
         protected SpiderContext ct;
 
-
-        protected SpiderEngine()
+        public SpiderEngine()
         {
             this.SpiderName = this.GetType().Name.Underscore().Replace("_", "-");
+        }
+
+        public SpiderEngine(string url)
+        {
+            this.SpiderName = this.GetType().Name.Underscore().Replace("_", "-");
+            this.SetUrl(url);
         }
 
         public void SetDownloader(DownloaderMiddleware requester)
@@ -45,7 +63,7 @@ namespace SpiderSharp
             }
         }
 
-        protected virtual void Before()
+        protected async virtual Task BeforeAsync()
         {
             // Executed before Run()
             System.Console.WriteLine("Executing Middlewares");
@@ -58,9 +76,10 @@ namespace SpiderSharp
                 downloader = new DownloaderMiddleware();
                 downloader.HttpProvider = GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient;
                 downloader.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
+                downloader.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
             }
 
-            sourceCode = this.downloader.RunAsync(url).Result;
+            sourceCode = await this.downloader.RunAsync(url);
             Cookies = this.downloader.Cookies;
         }
 
@@ -79,6 +98,9 @@ namespace SpiderSharp
 
         public bool HasFollowPage()
         {
+            if (this.nofollow)
+                return false;
+
             return !string.IsNullOrEmpty(this.FollowPage());
         }
 
@@ -96,37 +118,21 @@ namespace SpiderSharp
             return ct;
         }
 
-        public void Run()
+        public async Task RunAsync()
         {
             do
             {
                 System.Console.WriteLine("Starting... " + this.SpiderName);
-                Before();
+                await BeforeAsync();
 
-                // Verify if is Html or Json
-                try
-                {
-                    // check if json
-                    this.Json = JToken.Parse(sourceCode);
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-                try
-                {
-                    this.node = new Nodes(sourceCode);
-                }
-                catch (Exception ex)
-                {
-
-                }
+                this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
+                this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
 
                 System.Console.WriteLine("Running... " + this.SpiderName);
-                result = new ExpandoObject();
+                
                 ct = new SpiderContext();
                 ct.Url = this.url;
+                ct.Bag = JObject.FromObject(ViewBag);
 
                 var obj = OnRun();
 
@@ -134,12 +140,24 @@ namespace SpiderSharp
                 {
                     ct = new SpiderContext();
                     ct.Url = this.url;
+                    ct.Bag = JObject.FromObject(ViewBag);
 
-                    // After(item.Data);
-                    if (item.Error == null)
-                        SuccessPipeline(item);
-                    else
-                        ErrorPipeline(item);
+                    try
+                    {
+                        // After(item.Data);
+                        if (item.Error == null)
+                            await SuccessPipelineAsync(item);
+                        else
+                            await ErrorPipelineAsync(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(JsonConvert.SerializeObject(this));
+                        Console.WriteLine(JsonConvert.SerializeObject(item));
+                        Console.WriteLine(JsonConvert.SerializeObject(ex));
+
+                        throw;
+                    }
                 }
 
                 System.Console.WriteLine("Finish... " + this.SpiderName);
@@ -149,19 +167,24 @@ namespace SpiderSharp
             } while (this.HasFollowPage());
         }
 
-        protected virtual void SuccessPipeline(SpiderContext context)
+        protected async virtual Task SuccessPipelineAsync(SpiderContext context)
         {
-            Console.WriteLine("Done Item");
+            Log.Debug("Sucess Pipeline");
         }
 
-        protected virtual void ErrorPipeline(SpiderContext context)
+        protected async virtual Task ErrorPipelineAsync(SpiderContext context)
         {
-            Console.WriteLine(context.Error.ToString());
+            Log.Debug("Erros Pipeline");
         }
 
         public void SetUrl(string url)
         {
             this.url = url;
+        }
+
+        public void SetNofollow()
+        {
+            this.nofollow = true;
         }
     }
 }

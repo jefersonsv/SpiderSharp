@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpiderSharp
 {
     public interface ISpiderEngine
     {
-        void Run();
+        Task RunAsync();
     }
 }

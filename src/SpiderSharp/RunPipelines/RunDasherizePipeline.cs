@@ -13,6 +13,7 @@ namespace SpiderSharp
             var it = this.Data;
             JObject obj = JObject.FromObject(it);
             Helpers.Json.Rename(obj, name => name.ToString().Underscore().Replace("_", "-"));
+            this.Data = obj;
         }
     }
 }

@@ -21,6 +21,7 @@
     <PackageReference Include="JsonFlatFileDataStore" Version="2.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Slugify.Core" Version="2.2.1" />
     <PackageReference Include="YoutubeExplode" Version="4.2.8" />
   </ItemGroup>
@@ -29,12 +30,6 @@
     <ProjectReference Include="..\Data.ElasticSearch\Data.ElasticSearch.csproj" />
     <ProjectReference Include="..\Data.MongoDB\Data.MongoDB.csproj" />
     <ProjectReference Include="..\HttpRequester\HttpRequester.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Data.Mongo">
-      <HintPath>..\Data.Mongo\bin\Release\netstandard2.0\Data.Mongo.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

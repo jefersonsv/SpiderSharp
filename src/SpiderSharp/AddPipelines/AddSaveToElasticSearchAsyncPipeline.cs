@@ -16,17 +16,10 @@ namespace SpiderSharp
         {
             this.AddPipeline(it =>
             {
-                try
-                {
-                    var elastic = new ElasticConnection(GlobalSettings.ElasticSearchIndex, GlobalSettings.ElasticSearchConnectionString);
-                    JObject obj = JObject.Parse(it.ToString());
-                    var id = (string)it[primaryKeyField];
-                    elastic.Index(type, id, obj.ToString());
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                var elastic = new ElasticConnection(GlobalSettings.ElasticSearchIndex, GlobalSettings.ElasticSearchConnectionString);
+                JObject obj = JObject.Parse(it.ToString());
+                var id = (string)it[primaryKeyField];
+                elastic.Index(id, obj.ToString());
 
                 return it;
             });

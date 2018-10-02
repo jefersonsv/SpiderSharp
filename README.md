@@ -2,31 +2,31 @@
 
 Web Crawling and Scraping Framework
 
-# 2. Content
+# Content
 <!-- TOC -->
 
 - [SpiderSharp](#spidersharp)
-- [2. Content](#2-content)
-    - [2.1. Features](#21-features)
-    - [2.2. Regular Expression Library](#22-regular-expression-library)
-    - [2.3. Http Requester Providers](#23-http-requester-providers)
-    - [2.4. Pipelines](#24-pipelines)
-        - [2.4.1. Dasherize Pipeline](#241-dasherize-pipeline)
-        - [2.4.2. Print to Console Pipeline](#242-print-to-console-pipeline)
-        - [2.4.3. Save to MongoDB Pipeline](#243-save-to-mongodb-pipeline)
-        - [2.4.4. Safe Urls Pipeline](#244-safe-urls-pipeline)
-        - [2.4.5. Youtube Detail Metadata Extractor](#245-youtube-detail-metadata-extractor)
-        - [2.4.6. Custom Pipeline](#246-custom-pipeline)
-		- [2.4.7. Save to ElasticSearch](#247-save-to-elasticsearch-pipeline)
-    - [2.5. Getting started](#25-getting-started)
-    - [2.6. To run the spider](#26-to-run-the-spider)
-    - [2.7. Sample](#27-sample)
-    - [2.8. Scrap Shell](#28-scrap-shell)
-    - [2.9. Thanks to](#29-thanks-to)
+- [Content](#content)
+    - [Features](#features)
+    - [Regular Expression Library](#regular-expression-library)
+    - [Http Requester Providers](#http-requester-providers)
+    - [Pipelines](#pipelines)
+        - [Dasherize Pipeline](#dasherize-pipeline)
+        - [Print to Console Pipeline](#print-to-console-pipeline)
+        - [Safe Urls Pipeline](#safe-urls-pipeline)
+        - [Youtube Detail Metadata Extractor](#youtube-detail-metadata-extractor)
+        - [Save to MongoDB Pipeline](#save-to-mongodb-pipeline)
+        - [Save to ElasticSearch](#save-to-elasticsearch)
+        - [Run Html Decode](#run-html-decode)
+    - [Getting started](#getting-started)
+    - [To run the spider](#to-run-the-spider)
+    - [Sample](#sample)
+    - [Scrap Shell](#scrap-shell)
+    - [Thanks to](#thanks-to)
 
 <!-- /TOC -->
 
-## 2.1. Features
+## Features
 
 - Cache web pages with Redis
 - Export the results automatically to MongoDB
@@ -37,12 +37,12 @@ Web Crawling and Scraping Framework
 - Common regular expression to grab data
 - Extract youtube video metadata
 
-## 2.2. Regular Expression Library
+## Regular Expression Library
 There are some **Regex** done to grab data
 
 - Cookies: Can slice each part of cookies
 
-## 2.3. Http Requester Providers
+## Http Requester Providers
 Each provider has your own features. You can choose anyone to get a resource
 
 - **HttpClient**: Provides a class for sending HTTP requests and receiving HTTP responses from a resource.
@@ -52,12 +52,12 @@ Each provider has your own features. You can choose anyone to get a resource
 - **BetterWebClient**: Extension of WebClient including session through with cookie container, GZip header, HTTP status code.
 - **Chrome Headless**: Request pages interpreting javascript. _You must have Google Chrome instaled_
 
-## 2.4. Pipelines
+## Pipelines
 
 Pipeline get a data and transform sending the result to next pipeline. Use can use how much pipelines you want.
 
-### 2.4.1. Dasherize Pipeline 
-> Call .RunDasherizePipeline() 
+### Dasherize Pipeline
+> Call .RunDasherizePipeline()
 
 This pipeline is used to normalize an object transforming the json key fields like:
 
@@ -66,19 +66,13 @@ This pipeline is used to normalize an object transforming the json key fields li
 "someTitle" => "some-title"
 ```
 
-### 2.4.2. Print to Console Pipeline
+### Print to Console Pipeline
 
 > Call .RunPrintToConsolePipeline(**fields**)
 
 This pipeline is used to print some scraped data to stdout. The **fields** parameter is optional
 
-### 2.4.3. Save to MongoDB Pipeline
-
-> Call .RunSaveToMongoAsyncPipeline(**collection**, **unique-id-filed**);
-
-This pipeline is used to do **UpSert** data on MongoDB. The **collection** parameter define the collection name to save and **unique-id-field** define the primary key of document to choose if the operation will be Insert or Update
-
-### 2.4.4. Safe Urls Pipeline
+### Safe Urls Pipeline
 
 > Call .RunSafeUrlsPipeline(result, prefixUrl, fieldArgs[])
 
@@ -88,7 +82,7 @@ This pipeline is used to add a http prefix to any scraped link data because some
 "href="image.jpg" => "http://user-domain.com/image.jpg"
 ```
 
-### 2.4.5. Youtube Detail Metadata Extractor
+### Youtube Detail Metadata Extractor
 
 > Call .RunYoutubeDetailPipeline()
 
@@ -102,27 +96,27 @@ This pipeline is used to extract information of metadata from youtube video url.
 
 __You must specify the field name that will receive the metadata information__
 
-### 2.4.6. Custom Pipeline
+### Save to MongoDB Pipeline
 
-> Call .RunPipeline(**Action**)
+> Call .RunSaveToMongoAsyncPipeline(**collection**, **unique-id-filed**);
 
-This pipeline is used to do any custom steps like:
+This pipeline is used to do **UpSert** data on MongoDB. The **collection** parameter define the collection name to save and **unique-id-field** define the primary key of document to choose if the operation will be Insert or Update
 
-```C#
-spider.RunPipeline(result =>
-{
-    result.scraped = DateTime.Now;
-}
-```
-
-### 2.4.7. Save to ElasticSearch
+### Save to ElasticSearch
 
 > Call .RunSaveToElasticSearchPipeline(**type**, **unique-id-filed**);
 
-This pipeline is used to **Index** data on ElasticSearch. The **type** parameter define the type name to save and **unique-id-field** define the primary key of document
+This pipeline is used to **Index** data on ElasticSearch. The **type** parameter define the type name to save and **unique-id-field** define the primary key of document.
 
+The field **unique-id-field** is optional, its will be generated if not specified.
 
-## 2.5. Getting started 
+### Run Html Decode
+
+> Call .RunHtmlDecode();
+
+This pipeline converts a string that has been HTML-encoded for HTTP transmission into a decoded string
+
+## Getting started 
 
 1. Start a new **console** project and add Nuget Reference
 2. PM> ` Install-Package SpiderSharp `
@@ -175,7 +169,7 @@ public class ScrapQuotesSpider : SpiderEngine, ISpiderEngine
 
 ```
 
-## 2.6. To run the spider
+## To run the spider
 
 1. Create a instance of spider
 2. Choose almost one pipeline to return
@@ -186,17 +180,17 @@ ScrapQuotesSpider spider = new ScrapQuotesSpider();
 spider.Run();
 ```
 
-## 2.7. Sample
+## Sample
 
 The project include a simple quotes scrap of http://quotes.toscrape.com
 
 ![Sample running](https://github.com/jefersonsv/SpiderSharp/raw/master/sample-running.gif)
 
-## 2.8. Scrap Shell
+## Scrap Shell
 
 This application can be used to inspect and debug a spider
 
-## 2.9. Thanks to
+## Thanks to
 
 - [AngleSharp](https://github.com/AngleSharp/AngleSharp) - The ultimate angle brackets parser library parsing HTML5, MathML, SVG and CSS to construct a DOM based on the official W3C specifications
 - [HtmlAgilityPack](https://github.com/zzzprojects/html-agility-pack) - Html Agility Pack (HAP)

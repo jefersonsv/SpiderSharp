@@ -8,6 +8,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
+        public dynamic Bag { get; set; }
         public dynamic Data { get; set;  }
         public Exception Error { get; set;  }
         public bool HasError { get { return this.Error != null; } }

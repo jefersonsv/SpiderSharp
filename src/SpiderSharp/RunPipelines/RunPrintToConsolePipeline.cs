@@ -13,7 +13,7 @@ namespace SpiderSharp
         public void RunPrintToConsolePipeline(params string[] fields)
         {
             var it = this.Data;
-            
+
             if (fields == null || fields.Count() == 0)
             {
                 JToken obj = JToken.FromObject(it);
