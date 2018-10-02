@@ -94,6 +94,14 @@ namespace Data.ElasticSearch
             return searchResponse;
         }
 
+        public async Task<string> QueryAsync(string json)
+        {
+            PostData post = PostData.String(json);
+            var res = await this.LowClient.SearchAsync<StringResponse>(this.index, this.index, post);
+            
+            return System.Text.Encoding.Default.GetString(res.ResponseBodyInBytes);
+        }
+
         public async Task<dynamic> QueryAllAsync(int limit = 10)
         {
             var searchResponse = await this.HighClient.SearchAsync<dynamic>(s => s
