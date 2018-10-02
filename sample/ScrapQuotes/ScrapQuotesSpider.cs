@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SpiderSharp;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace ScrapQuotes
 {
@@ -32,12 +33,12 @@ namespace ScrapQuotes
             }
         }
 
-        protected override void SuccessPipeline(SpiderContext context)
+        protected async override Task SuccessPipelineAsync(SpiderContext context)
         {
             context.RunPrintToConsolePipeline();
         }
 
-        protected override void ErrorPipeline(SpiderContext context)
+        protected async override Task ErrorPipelineAsync(SpiderContext context)
         {
             context.RunEmbedMetadata();
             context.RunPrintToConsolePipeline();

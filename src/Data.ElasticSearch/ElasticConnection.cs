@@ -94,7 +94,7 @@ namespace Data.ElasticSearch
             return searchResponse;
         }
 
-        public async Task<dynamic> QueryAllAsync(int limit = 10, DateTime belowOf)
+        public async Task<dynamic> QueryAllAsync(int limit = 10)
         {
             var searchResponse = await this.HighClient.SearchAsync<dynamic>(s => s
                     .Index(this.index)
