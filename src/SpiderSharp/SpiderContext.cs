@@ -15,6 +15,8 @@ namespace SpiderSharp
 
         public string Url { get; set; }
 
+        public string Spider { get; set; }
+
         public SpiderContext()
         {
             //dynamic json = new ExpandoObject();

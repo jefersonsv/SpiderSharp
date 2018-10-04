@@ -10,6 +10,7 @@ using System.Dynamic;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Serilog;
+using System.Diagnostics;
 
 namespace SpiderSharp
 {
@@ -112,6 +113,9 @@ namespace SpiderSharp
             }
             catch (Exception ex)
             {
+#if DEBUG
+                Debugger.Break();
+#endif
                 ct.Error = ex;
             }
 
@@ -132,6 +136,7 @@ namespace SpiderSharp
                 
                 ct = new SpiderContext();
                 ct.Url = this.url;
+                ct.Spider = this.SpiderName;
                 ct.Bag = JObject.FromObject(ViewBag);
 
                 var obj = OnRun();
@@ -140,6 +145,7 @@ namespace SpiderSharp
                 {
                     ct = new SpiderContext();
                     ct.Url = this.url;
+                    ct.Spider = this.SpiderName;
                     ct.Bag = JObject.FromObject(ViewBag);
 
                     try
@@ -156,7 +162,7 @@ namespace SpiderSharp
                         Console.WriteLine(JsonConvert.SerializeObject(item));
                         Console.WriteLine(JsonConvert.SerializeObject(ex));
 
-                        throw;
+                        Log.Error(ex, "Error looping spider engine");
                     }
                 }
 

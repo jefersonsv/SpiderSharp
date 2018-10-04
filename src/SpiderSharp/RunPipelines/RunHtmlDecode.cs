@@ -18,14 +18,13 @@ namespace SpiderSharp
             {
                 JProperty prop = json.Property(token);
 
-                if (prop != null && prop.HasValues && prop.Type == JTokenType.String)
+                if (prop != null && prop.HasValues && prop.Type == JTokenType.Property)
                 {
                     prop.Value = System.Web.HttpUtility.HtmlDecode(prop.Value.ToString());
                 }
             }
 
-            dynamic dyn = json;
-            this.Data = dyn;
+            this.Data = json;
         }
     }
 }

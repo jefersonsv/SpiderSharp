@@ -41,7 +41,7 @@ namespace HttpRequester
             else
             {
                 // return cached
-                Log.Debug("Cached: {key}", key);
+                Log.Debug("Get cached: {key}", key);
                 return source.ToString();
             }
 

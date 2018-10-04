@@ -28,6 +28,12 @@ namespace SpiderSharp
             return 1;
         }
 
+        public static int? NumbersOrNull(string value)
+        {
+            var num = Regex.Match(value, @"\d+").Value;
+            return IntOrNull(num);
+        }
+
         public static JToken JsonList(object obj)
         {
             return JToken.FromObject(obj);
@@ -40,7 +46,37 @@ namespace SpiderSharp
 
             Regex regex = new Regex(pattern);
             if (regex.IsMatch(text))
-                return regex.Match(text).Value;
+                return regex.Match(text).Groups[0].Value;
+            else
+                return null;
+        }
+
+        public static string RegexLastGroup(string text, string pattern)
+        {
+            if (string.IsNullOrEmpty(text))
+                return null;
+
+            Regex regex = new Regex(pattern);
+            if (regex.IsMatch(text))
+            {
+                var match = regex.Match(text);
+                return match.Groups[match.Groups.Count - 1].Value;
+            }
+            else
+                return null;
+        }
+
+        public static string RegexGroup(string text, string pattern, string group)
+        {
+            if (string.IsNullOrEmpty(text))
+                return null;
+
+            Regex regex = new Regex(pattern);
+            if (regex.IsMatch(text))
+            {
+                var match = regex.Match(text);
+                return match.Groups[group].Value;
+            }
             else
                 return null;
         }

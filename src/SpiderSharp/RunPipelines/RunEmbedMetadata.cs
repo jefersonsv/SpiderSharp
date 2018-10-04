@@ -10,7 +10,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunEmbedMetadata(string exceptionProperty = "__exception", string urlProperty = "__url", string nowProperty = "__now")
+        public void RunEmbedMetadata(string exceptionProperty = "__exception", string urlProperty = "__url", string nowProperty = "__now", string spiderName = "__spider")
         {
             JObject obj = JObject.FromObject(this.Data);
 
@@ -20,6 +20,7 @@ namespace SpiderSharp
             if (!string.IsNullOrEmpty(this.Url))
                 obj.Add(urlProperty, this.Url);
 
+            obj.Add(spiderName, this.Spider);
             obj.Add(nowProperty, DateTime.Now);
 
             this.Data = obj;

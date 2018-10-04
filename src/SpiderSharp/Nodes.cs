@@ -63,12 +63,12 @@ namespace SpiderSharp
         public string GetInnerText(string cssSelector)
         {
             var node = doc.QuerySelector(cssSelector);
-            return node?.InnerText;
+            return System.Web.HttpUtility.HtmlDecode(node?.InnerText);
         }
 
         public string GetInnerText()
         {
-            return doc?.InnerText;
+            return System.Web.HttpUtility.HtmlDecode(doc?.InnerText);
         }
 
         public string GetHtml()
@@ -107,7 +107,7 @@ namespace SpiderSharp
         public IEnumerable<string> SelectInnerText(string cssSelector)
         {
             var nodes = doc.QuerySelectorAll(cssSelector);
-            return nodes?.Select(s => s.InnerText);
+            return nodes?.Select(s => System.Web.HttpUtility.HtmlDecode(s.InnerText));
         }
 
         public IEnumerable<Nodes> SelectNodes(string cssSelector)
