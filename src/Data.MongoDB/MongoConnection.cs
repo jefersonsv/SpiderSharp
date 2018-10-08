@@ -30,7 +30,7 @@ namespace Data.MongoDB
             return MongoClientSettings.FromUrl(mongoUrl);
         }
 
-        public void UpdateDefinition(string collection, string pkField, string pkValue, string json)
+        public async Task UpdateDefinitionAsync(string collection, string pkField, string pkValue, string json)
         {
             //self.db[self.mongo_collection].update({'unique-id': uniqueid}, {"$set" : dicionary, "$inc": { 'counter': 1}}, upsert=True)
             var coll = DB.GetCollection<BsonDocument>(collection);
@@ -50,8 +50,7 @@ namespace Data.MongoDB
             }
 
             // http://www.fourthbottle.com/2015/07/update-details-into-mongodb-using-csharp-and-.Net.html
-            var upt = coll.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
-            upt.Wait();
+            var upt = await coll.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
         }
     }
 }

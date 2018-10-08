@@ -16,16 +16,16 @@ namespace SpiderSharp
             
             this.AddPipeline(it =>
             {
-                try
-                {
-                    var mongo = new MongoConnection(GlobalSettings.MongoDatabase, GlobalSettings.MongoConnectionString);
-                    var pkValue = (string)it[primaryKeyField];
-                    mongo.UpdateDefinition(collection, primaryKeyField, pkValue, it.ToString());
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                //try
+                //{
+                //    var mongo = new MongoConnection(GlobalSettings.MongoDatabase, GlobalSettings.MongoConnectionString);
+                //    var pkValue = (string)it[primaryKeyField];
+                //    mongo.UpdateDefinitionAsync(collection, primaryKeyField, pkValue, it.ToString());
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine(ex.Message);
+                //}
 
                 return it;
             });

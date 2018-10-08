@@ -30,6 +30,9 @@ namespace SpiderSharp
 
         public static int? NumbersOrNull(string value)
         {
+            if (value == null)
+                return null;
+
             var num = Regex.Match(value, @"\d+").Value;
             return IntOrNull(num);
         }
