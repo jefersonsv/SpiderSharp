@@ -18,7 +18,7 @@ namespace SpiderSharp
             {
                 JProperty prop = json.Property(token);
 
-                if (prop != null && prop.HasValues && prop.Type == JTokenType.Property)
+                if (prop != null && prop.HasValues && prop.Type == JTokenType.Property && prop.Value.Type == JTokenType.String)
                 {
                     prop.Value = System.Web.HttpUtility.HtmlDecode(prop.Value.ToString());
                 }

@@ -31,7 +31,10 @@ namespace SpiderSharp
 
         public void AddBag(string key, string value)
         {
-            ViewBag.Add(key, value);
+            if (ViewBag.ContainsKey(key))
+                ViewBag[key] = value;
+            else
+                ViewBag.Add(key, value);
             if (ct != null)
                 ct.Bag[key] = value;
         }
@@ -78,6 +81,7 @@ namespace SpiderSharp
                 downloader.HttpProvider = GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient;
                 downloader.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
                 downloader.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
+                downloader.DefaultHeaders = GlobalSettings.DefaultHeaders ?? new Dictionary<string, string>();
             }
 
             sourceCode = await this.downloader.RunAsync(url);

@@ -6,11 +6,11 @@ namespace SpiderSharp.Helpers
 {
     public static class Numeric
     {
-        public static decimal CalculateDiscount(decimal? originalPrice, decimal currentPrice)
+        public static decimal? CalculateDiscount(decimal? originalPrice, decimal currentPrice)
         {
             if (!originalPrice.HasValue || originalPrice <= 0 || currentPrice <= 0)
             {
-                return 0;
+                return null;
             }
 
             var discountCalc = (originalPrice - currentPrice) / originalPrice;

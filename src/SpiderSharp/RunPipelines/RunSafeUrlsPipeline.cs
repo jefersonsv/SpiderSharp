@@ -10,16 +10,30 @@ namespace SpiderSharp
     {
         public void RunSafeUrlsPipeline(string domain, params string[] tokens)
         {
-            var it = this.Data;
-            JObject json = JObject.FromObject(it);
+            JObject json = JObject.FromObject(this.Data);
 
             foreach (var token in tokens)
             {
-                JProperty prop = json.Property(token);
+                JToken jtoken = json.SelectToken(token);
 
-                if (prop != null && prop.HasValues)
+                if (jtoken.Type == JTokenType.Array)
                 {
-                    string link = prop.Value.ToString().ToLower();
+                    JArray jarr = (JArray) jtoken;
+
+                    for (int i=0; i<jarr.Count; i++)
+                    {
+                        if (jarr[i].Type == JTokenType.String)
+                        {
+                            if (!jarr[i].ToString().ToLower().StartsWith(domain.ToLower()))
+                            {
+                                jarr[i] = $"{domain}{jarr[i].ToString()}";
+                            }
+                        }
+                    }
+                }
+                else if (jtoken.Type == JTokenType.String)
+                {
+                    string link = jtoken.Value<string>().ToString().ToLower();
 
                     if (!string.IsNullOrEmpty(link))
                     {
@@ -28,7 +42,7 @@ namespace SpiderSharp
                         // add schema/domain/port if needed
                         if (!link.StartsWith(domain.ToLower().Trim()))
                         {
-                            var concat = prop.Value.ToString();
+                            var concat = jtoken.Value<string>().ToString();
                             if (concat.StartsWith("/"))
                             {
                                 concat = concat.Substring(1);
@@ -39,15 +53,19 @@ namespace SpiderSharp
                             Uri uri = null;
                             if (Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out uri))
                             {
-                                prop.Value = uri.ToString();
+                                JValue property = (JValue)jtoken;
+                                property.Value = uri.ToString();
+                            }
+                            else
+                            {
+                                throw new Exception($"Cannot parse uri {uri}");
                             }
                         }
                     }
                 }
             }
 
-            dynamic dyn = json;
-            this.Data = dyn;
+            this.Data = json;
         }
     }
 }

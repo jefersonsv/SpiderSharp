@@ -66,6 +66,12 @@ namespace SpiderSharp
             return System.Web.HttpUtility.HtmlDecode(node?.InnerText);
         }
 
+        public string GetFirstChildInnerText(string cssSelector)
+        {
+            var node = doc.QuerySelector(cssSelector);
+            return System.Web.HttpUtility.HtmlDecode(node?.FirstChild.InnerText);
+        }
+
         public string GetInnerText()
         {
             return System.Web.HttpUtility.HtmlDecode(doc?.InnerText);

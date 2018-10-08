@@ -19,5 +19,6 @@ namespace SpiderSharp
 
         public static EnumHttpProvider? HttpProvider { get; set; }
         public static Dictionary<string, string> DefaultHeaders = new Dictionary<string, string>();
+        //public static Dictionary<string, string> DefaultCookies = new Dictionary<string, string>();
     }
 }
