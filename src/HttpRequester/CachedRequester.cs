@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Polly;
+using Polly.Retry;
 using Serilog;
 
 namespace HttpRequester
@@ -32,10 +34,21 @@ namespace HttpRequester
             var source = await redis.DB.StringGetAsync(key);
             if (!source.HasValue)
             {
+                RetryPolicy retry = Policy
+                  .Handle<HttpRequestException>(r => r.Message.Contains("400"))
+                  .WaitAndRetryAsync(new[]
+                  {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(4),
+                  });
+
                 try
                 {
                     // first time
-                    var response = await requester.GetContentAsync(url);
+                    // var response = await requester.GetContentAsync(url);
+                    var response = await retry.ExecuteAsync(() => requester.GetContentAsync(url));
+
                     Cookies = requester.Cookies;
                     if (!string.IsNullOrEmpty(response))
                     {

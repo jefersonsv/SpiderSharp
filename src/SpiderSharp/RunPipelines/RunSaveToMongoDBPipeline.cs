@@ -5,12 +5,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunSaveToMongoDBAsyncPipeline(string collection, string primaryKeyField)
+        public async Task RunSaveToMongoDBAsyncPipelineAsync(string collection, string primaryKeyField)
         {
             var it = this.Data;
             
@@ -18,7 +19,7 @@ namespace SpiderSharp
             {
                 var mongo = new MongoConnection(GlobalSettings.MongoDatabase, GlobalSettings.MongoConnectionString);
                 var pkValue = (string)it[primaryKeyField];
-                mongo.UpdateDefinition(collection, primaryKeyField, pkValue, it.ToString());
+                await mongo.UpdateDefinitionAsync(collection, primaryKeyField, pkValue, it.ToString());
             }
             catch (Exception ex)
             {
