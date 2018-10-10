@@ -40,7 +40,7 @@ namespace ScrapQuotes
 
         protected async override Task ErrorPipelineAsync(SpiderContext context)
         {
-            context.RunEmbedMetadata();
+            context.RunEmbedMetadataPipeline();
             context.RunPrintToConsolePipeline();
         }
     }
