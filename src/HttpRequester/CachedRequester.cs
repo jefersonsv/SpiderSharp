@@ -35,36 +35,32 @@ namespace HttpRequester
             if (!source.HasValue)
             {
                 RetryPolicy retry = Policy
-                  .Handle<HttpRequestException>(r => r.Message.Contains("400"))
-                  .WaitAndRetryAsync(new[]
-                  {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(4),
-                  });
-
-                try
-                {
-                    // first time
-                    // var response = await requester.GetContentAsync(url);
-                    var response = await retry.ExecuteAsync(() => requester.GetContentAsync(url));
-
-                    Cookies = requester.Cookies;
-                    if (!string.IsNullOrEmpty(response))
+                    .Handle<System.AggregateException>(r => r.Message.Contains("400"))
+                    .Or<HttpRequestException>(r => r.Message.Contains("400"))
+                    .WaitAndRetryAsync(new[]
                     {
-                        TimeSpan dur = DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow;
-                        if (duration == null)
-                            duration = dur;
+                      TimeSpan.FromSeconds(2),
+                      TimeSpan.FromSeconds(8)
+                    });
 
-                        var ret = await redis.DB.StringSetAsync(key, response, duration);
-                        Log.Debug("Redis saved - Key: {key} Result: {ret}", key, ret);
-                        return response;
-                    }
-                }
-                catch (HttpRequestException ex) when (ex.Message.Contains("404"))
+                // first time
+                var response = await retry.ExecuteAsync(() =>
                 {
-                    return string.Empty;
+                    return requester.GetContentAsync(url);
+                });
+
+                Cookies = requester.Cookies;
+                if (!string.IsNullOrEmpty(response))
+                {
+                    TimeSpan dur = DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow;
+                    if (duration == null)
+                        duration = dur;
+
+                    var ret = await redis.DB.StringSetAsync(key, response, duration);
+                    Log.Debug("Redis saved - Key: {key} Result: {ret}", key, ret);
+                    return response;
                 }
+                
             }
             else
             {

@@ -9,7 +9,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunHtmlDecode()
+        public void RunHtmlDecodePipeline()
         {
             var it = this.Data;
             JObject json = JObject.FromObject(it);

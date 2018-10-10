@@ -16,13 +16,12 @@ namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
-        public DownloaderMiddleware downloader = null;
+        public DownloaderMiddleware Downloader = new DownloaderMiddleware();
         readonly List<Func<dynamic, dynamic>> pipelines = new List<Func<dynamic, dynamic>>();
         string sourceCode;
         string url;
         bool nofollow;
-
-        public string Cookies { get; set; }
+        public string Cookies { get; private set; }
         protected Nodes node;
         protected JToken Json { get; set; }
         public string SpiderName { get; private set; }
@@ -54,7 +53,7 @@ namespace SpiderSharp
 
         public void SetDownloader(DownloaderMiddleware requester)
         {
-            this.downloader = requester;
+            this.Downloader = requester;
         }
 
         protected virtual void After(dynamic jObject)
@@ -75,17 +74,8 @@ namespace SpiderSharp
             Ensure.That(url).IsNotNullOrWhiteSpace();
             // Ensure.That(downloader).IsNotNull();
 
-            if (downloader == null)
-            {
-                downloader = new DownloaderMiddleware();
-                downloader.HttpProvider = GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient;
-                downloader.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
-                downloader.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
-                downloader.DefaultHeaders = GlobalSettings.DefaultHeaders ?? new Dictionary<string, string>();
-            }
-
-            sourceCode = await this.downloader.RunAsync(url);
-            Cookies = this.downloader.Cookies;
+            sourceCode = await this.Downloader.RunAsync(url);
+            Cookies = this.Downloader.Cookies;
         }
 
         protected virtual string FollowPage()
@@ -126,8 +116,13 @@ namespace SpiderSharp
             return ct;
         }
 
+
+        string DebugFile;
+
         public async Task RunAsync()
         {
+            SetupBeforeRun();
+
             do
             {
                 System.Console.WriteLine("Starting... " + this.SpiderName);
@@ -135,6 +130,16 @@ namespace SpiderSharp
 
                 this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
                 this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
+
+#if DEBUG
+                if (this.node != null)
+                {
+                    DebugFile = System.IO.Path.GetTempFileName() + ".html";
+                    System.IO.File.WriteAllText(DebugFile, sourceCode);
+
+                    Log.Debug($"Debug: {DebugFile}");
+                }
+#endif
 
                 System.Console.WriteLine("Running... " + this.SpiderName);
                 
@@ -184,7 +189,12 @@ namespace SpiderSharp
 
         protected async virtual Task ErrorPipelineAsync(SpiderContext context)
         {
-            Log.Debug("Erros Pipeline");
+            Log.Debug("Error Pipeline");
+        }
+
+        protected virtual void SetupBeforeRun()
+        {
+            Log.Debug("Setup for run");
         }
 
         public void SetUrl(string url)

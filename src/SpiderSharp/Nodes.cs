@@ -42,7 +42,7 @@ namespace SpiderSharp
         public string GetAttributeValue(string cssSelector, string attribute)
         {
             var node = doc.QuerySelector(cssSelector);
-            return node.Attributes[attribute].Value;
+            return node?.Attributes[attribute]?.Value;
         }
 
         public string GetClass(string cssSelector)

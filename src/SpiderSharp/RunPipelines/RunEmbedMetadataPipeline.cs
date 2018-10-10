@@ -10,7 +10,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunEmbedMetadata(string exceptionProperty = "__exception", string urlProperty = "__url", string nowProperty = "__now", string spiderName = "__spider")
+        public void RunEmbedMetadataPipeline(string exceptionProperty = "__exception", string urlProperty = "__url", string nowProperty = "__now", string spiderName = "__spider")
         {
             JObject obj = JObject.FromObject(this.Data);
 

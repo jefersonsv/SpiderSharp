@@ -40,7 +40,7 @@ namespace HttpRequester
                 var requester = new AngleSharp.Network.Default.HttpRequester();
 
                 if (!DefaultHeaders.ContainsKey("User-Agent"))
-                    requester.Headers["User-Agent"] = this.spiderSharpUserAgent;
+                    requester.Headers["User-Agent"] = this.SpiderSharpUserAgent;
 
                 var configuration = Configuration.Default.WithDefaultLoader(loader =>
                 {
@@ -121,7 +121,7 @@ namespace HttpRequester
             throw new NotImplementedException();
         }
 
-        string spiderSharpUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0";
+        public string SpiderSharpUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0";
 
         void PublishHeaders()
         {
@@ -138,7 +138,7 @@ namespace HttpRequester
                     }
 
                     if (!DefaultHeaders.ContainsKey("User-Agent"))
-                        this.httpClient.DefaultRequestHeaders.Add("User-Agent", this.spiderSharpUserAgent);
+                        this.httpClient.DefaultRequestHeaders.Add("User-Agent", this.SpiderSharpUserAgent);
 
                     if (!DefaultHeaders.ContainsKey("Cookie"))
                         this.httpClient.DefaultRequestHeaders.Add("Cookie", this.Cookies);
@@ -153,7 +153,7 @@ namespace HttpRequester
                     }
 
                     if (!DefaultHeaders.ContainsKey("User-Agent"))
-                        this.betterWebClient.Headers.Add("User-Agent", this.spiderSharpUserAgent);
+                        this.betterWebClient.Headers.Add("User-Agent", this.SpiderSharpUserAgent);
 
                     if (!DefaultHeaders.ContainsKey("Cookie"))
                         this.betterWebClient.Headers.Add("Cookie", this.Cookies);
@@ -167,7 +167,7 @@ namespace HttpRequester
                     }
 
                     if (!DefaultHeaders.ContainsKey("User-Agent"))
-                        this.cookieWebClient.Headers.Add("User-Agent", this.spiderSharpUserAgent);
+                        this.cookieWebClient.Headers.Add("User-Agent", this.SpiderSharpUserAgent);
 
                     if (!DefaultHeaders.ContainsKey("Cookie"))
                         this.cookieWebClient.Headers.Add("Cookie", this.Cookies);

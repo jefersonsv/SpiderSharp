@@ -8,6 +8,9 @@ namespace SpiderSharp.Helpers
     {
         public static string ReplaceQueryString(string url, string newQueryString)
         {
+            if (string.IsNullOrEmpty(url))
+                return url;
+
             UriBuilder uri = new UriBuilder(url);
             uri.Query = newQueryString;
 

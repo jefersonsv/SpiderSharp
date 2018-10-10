@@ -12,11 +12,11 @@ namespace SpiderSharp
     {
 
         [Obsolete("Use RunSaveToElasticSearchAsyncPipeline in SpiderContext")]
-        public void AddSaveToElasticSearchAsyncPipeline(string type, string primaryKeyField)
+        public void AddSaveToElasticSearchAsyncPipeline(string index, string primaryKeyField)
         {
             this.AddPipeline(it =>
             {
-                var elastic = new ElasticConnection(GlobalSettings.ElasticSearchIndex, GlobalSettings.ElasticSearchConnectionString);
+                var elastic = new ElasticConnection(index, GlobalSettings.ElasticSearchConnectionString);
                 JObject obj = JObject.Parse(it.ToString());
                 var id = (string)it[primaryKeyField];
                 elastic.Index(id, obj.ToString());

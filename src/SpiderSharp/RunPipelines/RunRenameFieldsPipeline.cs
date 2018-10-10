@@ -9,7 +9,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunRenameFields(string from, string to)
+        public void RunRenameFieldsPipeline(string from, string to)
         {
             var it = this.Data;
             var jobject = JObject.FromObject(it);
