@@ -33,8 +33,14 @@ namespace SpiderSharp
             if (UseRedisCache)
             {
                 cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(RedisConnectrionstring, HttpProvider, Duration);
-                cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
-                content = await cachedRequester.GetContentAsync(url);
+                cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>(); try
+                {
+                    content = await cachedRequester.GetContentAsync(url);
+                }
+                catch (HttpRequestException ex) when (ex.Message.Contains("404"))
+                {
+                    return string.Empty;
+                }
             }
             else
             {

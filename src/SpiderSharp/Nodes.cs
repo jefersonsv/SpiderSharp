@@ -60,6 +60,16 @@ namespace SpiderSharp
             return GetAttribute(cssSelector, "href");
         }
 
+        public string GetTitle(string cssSelector)
+        {
+            return GetAttribute(cssSelector, "title");
+        }
+
+        public string GetSrc(string cssSelector)
+        {
+            return GetAttribute(cssSelector, "src");
+        }
+
         public string GetInnerText(string cssSelector)
         {
             var node = doc.QuerySelector(cssSelector);

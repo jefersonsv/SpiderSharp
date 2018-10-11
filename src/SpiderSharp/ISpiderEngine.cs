@@ -9,7 +9,8 @@ namespace SpiderSharp
     public interface ISpiderEngine
     {
         Task RunAsync();
-        void AddBag(string key, string value);
+        void AddBag(string key, object value);
         void SetUrl(string url);
+        void SetNofollow();
     }
 }

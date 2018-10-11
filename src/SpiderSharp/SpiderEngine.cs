@@ -28,14 +28,15 @@ namespace SpiderSharp
 
         private Dictionary<string, object> ViewBag = new Dictionary<string, object>();
 
-        public void AddBag(string key, string value)
+        public void AddBag(string key, object value)
         {
             if (ViewBag.ContainsKey(key))
                 ViewBag[key] = value;
             else
                 ViewBag.Add(key, value);
+
             if (ct != null)
-                ct.Bag[key] = value;
+                ct.Bag = JObject.FromObject(ViewBag);
         }
 
         protected SpiderContext ct;
@@ -91,13 +92,6 @@ namespace SpiderSharp
             return this.url;
         }
 
-        public bool HasFollowPage()
-        {
-            if (this.nofollow)
-                return false;
-
-            return !string.IsNullOrEmpty(this.FollowPage());
-        }
 
         public dynamic Fetch(Action action)
         {
@@ -123,6 +117,7 @@ namespace SpiderSharp
         {
             SetupBeforeRun();
 
+            var hasNextPage = false;
             do
             {
                 System.Console.WriteLine("Starting... " + this.SpiderName);
@@ -177,9 +172,14 @@ namespace SpiderSharp
 
                 System.Console.WriteLine("Finish... " + this.SpiderName);
 
-                if (HasFollowPage())
-                    this.SetUrl(FollowPage());
-            } while (this.HasFollowPage());
+                var nextPage = this.FollowPage();
+                hasNextPage = !string.IsNullOrEmpty(nextPage);
+                if (hasNextPage)
+                {
+                    this.SetUrl(nextPage);
+                }
+
+            } while (hasNextPage);
         }
 
         protected async virtual Task SuccessPipelineAsync(SpiderContext context)

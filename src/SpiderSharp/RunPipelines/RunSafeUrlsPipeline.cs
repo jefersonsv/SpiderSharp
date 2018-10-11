@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -15,6 +16,12 @@ namespace SpiderSharp
             foreach (var token in tokens)
             {
                 JToken jtoken = json.SelectToken(token);
+
+                if (jtoken == null)
+                {
+                    Log.Warning($"Token {token} don't is on context");
+                    continue;
+                }
 
                 if (jtoken.Type == JTokenType.Array)
                 {
