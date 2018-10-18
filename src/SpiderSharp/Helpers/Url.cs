@@ -16,5 +16,10 @@ namespace SpiderSharp.Helpers
 
             return uri.Uri.ToString();
         }
+
+        public static string RemoveQueryString(string url)
+        {
+            return ReplaceQueryString(url, string.Empty);
+        }
     }
 }

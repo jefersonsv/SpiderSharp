@@ -2,7 +2,7 @@
 using Slugify;
 using System.Text.RegularExpressions;
 
-namespace SpiderSharp
+namespace SpiderSharp.Helpers
 {
     public static class Extractors
     {

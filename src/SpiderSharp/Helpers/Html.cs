@@ -8,7 +8,7 @@ namespace SpiderSharp.Helpers
 {
     public static class Html
     {
-        static string[] TAGS_REMOVE = { "HOME", "FOR", "WITH" };
+        static string[] TAGS_REMOVE = { "HOME", "FOR", "WITH", "AND" };
 
         public static JToken GetTags(string title, string[] categoriesArr)
         {

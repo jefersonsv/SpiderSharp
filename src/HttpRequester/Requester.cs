@@ -230,6 +230,18 @@ namespace HttpRequester
             PublishHeaders();
             switch (HttpProvider)
             {
+                case EnumHttpProvider.HttpClient:
+
+                    List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+                    foreach (KeyValuePair<string, string> item in postData)
+                    {
+                        list.Add(item);
+                    }
+
+                    var stringContent = new FormUrlEncodedContent(list);
+                    var post = await this.httpClient.PostAsync(url, stringContent);
+                    return await post.Content.ReadAsStringAsync();
+
                 case EnumHttpProvider.BetterWebClient:
                     var data = await betterWebClient.UploadValuesTaskAsync(uri, "POST", postData );
                     Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);

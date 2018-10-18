@@ -28,6 +28,11 @@ namespace SpiderSharp
             return node != null;
         }
 
+        public string GetAttribute(string attribute)
+        {
+            return doc?.Attributes[attribute].Value;
+        }
+
         public string GetAttribute(string cssSelector, string attribute)
         {
             var node = doc.QuerySelector(cssSelector);

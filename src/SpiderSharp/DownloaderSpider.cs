@@ -27,13 +27,38 @@ namespace SpiderSharp
             this.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
         }
 
+        public async Task SimplePostAsync(string url)
+        {
+            client = client ?? new HttpRequester.Requester(HttpProvider);
+            client.DefaultHeaders = DefaultHeaders;
+            client.Cookies = this.Cookies;
+            await client.PostContentAsync(url, new System.Collections.Specialized.NameValueCollection());
+            Cookies = client.Cookies;
+        }
+
+        public async Task SimpleGetAsync(string url)
+        {
+            client = client ?? new HttpRequester.Requester(HttpProvider);
+            client.DefaultHeaders = DefaultHeaders;
+            client.Cookies = this.Cookies;
+            await client.GetContentAsync(url);
+            Cookies = client.Cookies;
+        }
+
         public async Task<string> RunAsync(string url)
         {
             string content = string.Empty;
             if (UseRedisCache)
             {
                 cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(RedisConnectrionstring, HttpProvider, Duration);
-                cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>(); try
+                cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
+
+                if (!string.IsNullOrEmpty(Cookies))
+                {
+                    cachedRequester.DefaultHeaders["Cookie"] = this.Cookies;
+                }
+
+                try
                 {
                     content = await cachedRequester.GetContentAsync(url);
                 }

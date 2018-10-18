@@ -25,6 +25,13 @@ namespace HttpRequester
             this.duration = duration;
         }
 
+        public static async Task DeleteContentAsync(string redisConnectionString, string url)
+        {
+            var c = new Data.Redis.RedisConnection(redisConnectionString);
+            var key = $"content:{url}";
+            await c.DB.KeyDeleteAsync(key);
+        }
+
         public async Task<string> GetContentAsync(string url)
         {
             if (DefaultHeaders.Any())

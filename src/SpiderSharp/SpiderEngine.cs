@@ -115,71 +115,87 @@ namespace SpiderSharp
 
         public async Task RunAsync()
         {
-            SetupBeforeRun();
-
-            var hasNextPage = false;
-            do
+            try
             {
-                System.Console.WriteLine("Starting... " + this.SpiderName);
-                await BeforeAsync();
+                SetupBeforeRun();
 
-                this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
-                this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
+                var hasNextPage = false;
+                do
+                {
+                    System.Console.WriteLine("Starting... " + this.SpiderName);
+                    await BeforeAsync();
+
+                    this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
+                    this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
 
 #if DEBUG
-                if (this.node != null)
-                {
-                    DebugFile = System.IO.Path.GetTempFileName() + ".html";
-                    System.IO.File.WriteAllText(DebugFile, sourceCode);
+                    if (this.node != null)
+                    {
+                        DebugFile = System.IO.Path.GetTempFileName() + ".html";
+                        System.IO.File.WriteAllText(DebugFile, sourceCode);
 
-                    Log.Debug($"Debug: {DebugFile}");
-                }
+                        Log.Debug($"Debug: {DebugFile}");
+                    }
 #endif
 
-                System.Console.WriteLine("Running... " + this.SpiderName);
-                
-                ct = new SpiderContext();
-                ct.Url = this.url;
-                ct.Spider = this.SpiderName;
-                ct.Bag = JObject.FromObject(ViewBag);
+                    System.Console.WriteLine("Running... " + this.SpiderName);
 
-                var obj = OnRun();
-
-                foreach (var item in obj)
-                {
                     ct = new SpiderContext();
                     ct.Url = this.url;
                     ct.Spider = this.SpiderName;
                     ct.Bag = JObject.FromObject(ViewBag);
 
-                    try
+                    var obj = OnRun();
+
+                    foreach (var item in obj)
                     {
-                        // After(item.Data);
-                        if (item.Error == null)
-                            await SuccessPipelineAsync(item);
-                        else
-                            await ErrorPipelineAsync(item);
+                        ct = new SpiderContext();
+                        ct.Url = this.url;
+                        ct.Spider = this.SpiderName;
+                        ct.Bag = JObject.FromObject(ViewBag);
+
+                        try
+                        {
+                            // After(item.Data);
+                            if (item.Error == null)
+                                await SuccessPipelineAsync(item);
+                            else
+                                await ErrorPipelineAsync(item);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(JsonConvert.SerializeObject(this));
+                            Console.WriteLine(JsonConvert.SerializeObject(item));
+                            Console.WriteLine(JsonConvert.SerializeObject(ex));
+
+                            Log.Error(ex, "Error looping spider engine");
+                        }
                     }
-                    catch (Exception ex)
+
+                    System.Console.WriteLine("Finish... " + this.SpiderName);
+
+                    if (!nofollow)
                     {
-                        Console.WriteLine(JsonConvert.SerializeObject(this));
-                        Console.WriteLine(JsonConvert.SerializeObject(item));
-                        Console.WriteLine(JsonConvert.SerializeObject(ex));
-
-                        Log.Error(ex, "Error looping spider engine");
+                        var nextPage = this.FollowPage();
+                        hasNextPage = !string.IsNullOrEmpty(nextPage);
+                        if (hasNextPage)
+                        {
+                            this.SetUrl(nextPage);
+                        }
                     }
-                }
 
-                System.Console.WriteLine("Finish... " + this.SpiderName);
+                } while (hasNextPage);
 
-                var nextPage = this.FollowPage();
-                hasNextPage = !string.IsNullOrEmpty(nextPage);
-                if (hasNextPage)
-                {
-                    this.SetUrl(nextPage);
-                }
+            }
+            catch (Exception ex)
+            {
+                var ct = new SpiderContext();
+                ct.Url = this.url;
+                ct.Spider = this.SpiderName;
+                ct.Bag = JObject.FromObject(ViewBag);
 
-            } while (hasNextPage);
+                await ErrorPipelineAsync(ct);
+            }
         }
 
         protected async virtual Task SuccessPipelineAsync(SpiderContext context)
