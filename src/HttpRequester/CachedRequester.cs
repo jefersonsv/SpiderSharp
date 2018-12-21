@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
@@ -18,26 +19,45 @@ namespace HttpRequester
 
         public Dictionary<string, string> DefaultHeaders = new Dictionary<string, string>();
 
-        public CachedRequester(string redisConnectionString, EnumHttpProvider httpProvider, TimeSpan? duration)
+        public CachedRequester(Requester requester, string redisConnectionString, TimeSpan? duration)
         {
-            requester = new Requester(httpProvider);
-            redis = new Data.Redis.RedisConnection(redisConnectionString);
+            this.requester = requester;
             this.duration = duration;
+            redis = new Data.Redis.RedisConnection(redisConnectionString);
         }
 
         public static async Task DeleteContentAsync(string redisConnectionString, string url)
         {
+            var prefix = new Uri(url).Host;
+
             var c = new Data.Redis.RedisConnection(redisConnectionString);
-            var key = $"content:{url}";
+            var key = GetKey(url); // $"content:{prefix}:{url}";
             await c.DB.KeyDeleteAsync(key);
         }
 
-        public async Task<string> GetContentAsync(string url)
+        static string GetKey(string url)
         {
+            var uri = new Uri(url);
+            return $"{uri.Scheme}:{uri.Host}:{url}";
+            //return $"{AllReplace(url.ToString().Replace('/', ':'), ":")}";
+        }
+
+        static string AllReplace(string text, string character)
+        {
+            Regex regex = new Regex(character + "{2,}");
+            return regex.Replace(text, character);
+        }
+
+        public async Task<RequestContent> GetContentAsync(string url)
+        {
+            var prefix = new Uri(url).Host;
+
             if (DefaultHeaders.Any())
                 requester.DefaultHeaders = DefaultHeaders;
 
-            var key = $"content:{url}";
+            var key = GetKey(url); //$"content:{prefix}:{url}";
+
+
             var source = await redis.DB.StringGetAsync(key);
             if (!source.HasValue)
             {
@@ -59,13 +79,15 @@ namespace HttpRequester
                 Cookies = requester.Cookies;
                 if (!string.IsNullOrEmpty(response))
                 {
+                    Log.Information($"Loaded online: {url}");
                     TimeSpan dur = DateTime.UtcNow.AddMonths(1) - DateTime.UtcNow;
                     if (duration == null)
                         duration = dur;
 
                     var ret = await redis.DB.StringSetAsync(key, response, duration);
                     Log.Debug("Redis saved - Key: {key} Result: {ret}", key, ret);
-                    return response;
+
+                    return new RequestContent { Content = response, UsedCache = false };
                 }
                 
             }
@@ -73,7 +95,8 @@ namespace HttpRequester
             {
                 // return cached
                 Log.Debug("Get cached: {key}", key);
-                return source.ToString();
+
+                return new RequestContent { Content = source.ToString(), UsedCache = true };
             }
 
             return null;

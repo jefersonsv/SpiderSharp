@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Nest;
+using Serilog;
 
 namespace Data.ElasticSearch
 {
@@ -72,6 +73,7 @@ namespace Data.ElasticSearch
 
         public async Task DeleteByIdAsync(string id)
         {
+            Log.Verbose($"Deleting elastic document: {id}");
             var doc = new Nest
                 .DocumentPath<dynamic>(new Nest.Id(id))
                 .Index(this.index)
@@ -98,6 +100,9 @@ namespace Data.ElasticSearch
         {
             PostData post = PostData.String(json);
             var res = await this.LowClient.SearchAsync<StringResponse>(this.index, this.index, post);
+
+            if (!res.Success)
+                throw new Exception("Cannot perform QueryAsync. " + res.DebugInformation);
             
             return System.Text.Encoding.Default.GetString(res.ResponseBodyInBytes);
         }

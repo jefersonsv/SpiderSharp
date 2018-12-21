@@ -11,23 +11,29 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Serilog;
 using System.Diagnostics;
+using AngleSharp.Dom.Html;
 
 namespace SpiderSharp
 {
     public abstract partial class SpiderEngine
     {
-        public DownloaderMiddleware Downloader = new DownloaderMiddleware();
+        public DownloaderMiddleware Downloader = new DownloaderMiddleware(GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient);
         readonly List<Func<dynamic, dynamic>> pipelines = new List<Func<dynamic, dynamic>>();
         string sourceCode;
         string url;
         bool nofollow;
         public string Cookies { get; private set; }
+
         protected Nodes node;
+
+        protected IHtmlDocument AngleDocument { get; set; }
+
         protected JToken Json { get; set; }
+
         public string SpiderName { get; private set; }
 
         private Dictionary<string, object> ViewBag = new Dictionary<string, object>();
-
+        
         public void AddBag(string key, object value)
         {
             if (ViewBag.ContainsKey(key))
@@ -50,11 +56,6 @@ namespace SpiderSharp
         {
             this.SpiderName = this.GetType().Name.Underscore().Replace("_", "-");
             this.SetUrl(url);
-        }
-
-        public void SetDownloader(DownloaderMiddleware requester)
-        {
-            this.Downloader = requester;
         }
 
         protected virtual void After(dynamic jObject)
@@ -113,24 +114,32 @@ namespace SpiderSharp
 
         string DebugFile;
 
-        public async Task RunAsync()
+        public async Task<bool> RunAsync()
         {
+            Log.Information($"Starting RunAsync ... {this.SpiderName}");
             try
             {
+                this.ct = new SpiderContext();
+                ct.Url = this.url;
+                ct.Spider = this.SpiderName;
+                ct.Bag = JObject.FromObject(ViewBag);
+
                 SetupBeforeRun();
 
                 var hasNextPage = false;
                 do
                 {
-                    System.Console.WriteLine("Starting... " + this.SpiderName);
+                    Log.Information($"URL: {url}");
                     await BeforeAsync();
 
                     this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
                     this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
+                    this.AngleDocument = SpiderSharp.AngleDocument.TryParse(sourceCode);
 
 #if DEBUG
                     if (this.node != null)
                     {
+                        Log.Debug($"URL: {url}");
                         DebugFile = System.IO.Path.GetTempFileName() + ".html";
                         System.IO.File.WriteAllText(DebugFile, sourceCode);
 
@@ -138,13 +147,10 @@ namespace SpiderSharp
                     }
 #endif
 
-                    System.Console.WriteLine("Running... " + this.SpiderName);
-
-                    ct = new SpiderContext();
+                    Log.Information("Running... " + this.SpiderName);
                     ct.Url = this.url;
                     ct.Spider = this.SpiderName;
                     ct.Bag = JObject.FromObject(ViewBag);
-
                     var obj = OnRun();
 
                     foreach (var item in obj)
@@ -177,7 +183,7 @@ namespace SpiderSharp
                     if (!nofollow)
                     {
                         var nextPage = this.FollowPage();
-                        hasNextPage = !string.IsNullOrEmpty(nextPage);
+                        hasNextPage = !string.IsNullOrEmpty(nextPage) && nextPage != url;
                         if (hasNextPage)
                         {
                             this.SetUrl(nextPage);
@@ -186,16 +192,16 @@ namespace SpiderSharp
 
                 } while (hasNextPage);
 
+                return true;
             }
             catch (Exception ex)
             {
-                var ct = new SpiderContext();
-                ct.Url = this.url;
-                ct.Spider = this.SpiderName;
-                ct.Bag = JObject.FromObject(ViewBag);
-
-                await ErrorPipelineAsync(ct);
+                ct.Data.SpiderEngine = JsonConvert.SerializeObject(this);
+                //ct.RunEmbedMetadataPipeline();
+                Log.Error(ex, ct.Data.ToString());
             }
+
+            return false;
         }
 
         protected async virtual Task SuccessPipelineAsync(SpiderContext context)

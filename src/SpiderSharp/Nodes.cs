@@ -60,6 +60,11 @@ namespace SpiderSharp
             return this.doc.Attributes["href"].Value;
         }
 
+        public bool HasHref()
+        {
+            return this.doc.Attributes.Any(w => w.Name == "href");
+        }
+
         public string GetHref(string cssSelector)
         {
             return GetAttribute(cssSelector, "href");
@@ -68,6 +73,11 @@ namespace SpiderSharp
         public string GetTitle(string cssSelector)
         {
             return GetAttribute(cssSelector, "title");
+        }
+
+        public Nodes GetParentNode()
+        {
+            return new Nodes(this.doc.ParentNode);
         }
 
         public string GetSrc(string cssSelector)
@@ -134,6 +144,12 @@ namespace SpiderSharp
         public IEnumerable<Nodes> SelectNodes(string cssSelector)
         {
             return doc.QuerySelectorAll(cssSelector)
+                .Select(s => new Nodes(s));
+        }
+
+        public IEnumerable<Nodes> XSelectNodes(string xpath)
+        {
+            return doc.SelectNodes(xpath)
                 .Select(s => new Nodes(s));
         }
 

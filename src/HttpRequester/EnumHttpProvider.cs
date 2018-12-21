@@ -10,7 +10,6 @@ namespace HttpRequester
         AngleSharp,
         WebClient,
         BetterWebClient,
-        CookieWebClient,
 
         /// <summary>
         /// Best used to SPA

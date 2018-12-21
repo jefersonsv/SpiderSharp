@@ -18,6 +18,7 @@ namespace HttpRequester
     public class BetterWebClient : WebClient
     {
         private WebRequest _request = null;
+        public int? Timeout { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BetterWebClient" /> class.
@@ -127,6 +128,9 @@ namespace HttpRequester
         protected override WebRequest GetWebRequest(Uri address)
         {
             _request = base.GetWebRequest(address);
+
+            if (Timeout.HasValue)
+                _request.Timeout = this.Timeout.Value;
 
             var httpRequest = _request as HttpWebRequest;
 

@@ -8,7 +8,7 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunCleanUrlQueryStringPipeline(params string[] tokens)
+        public void RunCleanUrlBookmarkPipeline(params string[] tokens)
         {
             JObject json = JObject.FromObject(this.Data);
 
@@ -24,7 +24,7 @@ namespace SpiderSharp
                     {
                         if (jarr[i].Type == JTokenType.String)
                         {
-                            jarr[i] = SpiderSharp.Helpers.Url.ReplaceQueryString(jarr[i].ToString(), string.Empty);
+                            jarr[i] = SpiderSharp.Helpers.Url.ReplaceBookmark(jarr[i].ToString(), string.Empty);
                         }
                     }
                 }
@@ -33,7 +33,7 @@ namespace SpiderSharp
                     string link = jtoken.Value<string>().ToString();
 
                     JValue property = (JValue)jtoken;
-                    property.Value = SpiderSharp.Helpers.Url.ReplaceQueryString(link, string.Empty);
+                    property.Value = SpiderSharp.Helpers.Url.ReplaceBookmark(link, string.Empty);
                 }
             }
 

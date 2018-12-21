@@ -6,7 +6,7 @@ namespace SpiderSharp.Helpers
 {
     public static class Numeric
     {
-        public static decimal? CalculateDiscount(decimal? originalPrice, decimal currentPrice)
+        public static float? CalculateDiscount(double? originalPrice, double currentPrice)
         {
             if (!originalPrice.HasValue || originalPrice <= 0 || currentPrice <= 0)
             {
@@ -14,10 +14,10 @@ namespace SpiderSharp.Helpers
             }
 
             var discountCalc = (originalPrice - currentPrice) / originalPrice;
-            return Math.Min(Convert.ToInt32(discountCalc * 100), 100);
+            return Math.Max(Math.Min(Convert.ToInt32(discountCalc * 100), 100), 0);
         }
 
-        public static decimal? CalculateOriginalPrice(decimal? discount, decimal currentPrice)
+        public static double? CalculateOriginalPrice(double? discount, double currentPrice)
         {
             if (!discount.HasValue || discount <= 0 || currentPrice <= 0)
             {

@@ -1,5 +1,6 @@
 ﻿using HttpRequester;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,17 @@ namespace SpiderSharp
 {
     public class DownloaderMiddleware
     {
+        public void ForceCookies(string cookies)
+        {
+            this.client.ForceCookies = cookies;
+        }
+
+        //public string PrefixCache { get; set; }
+
         public Dictionary<string, string> DefaultHeaders = new Dictionary<string, string>();
+
+        public string HttpMethod { get; set; }
+        public string HttpBody { get; set; }
         public string RedisConnectrionstring { get; set; }
         public bool UseRedisCache { get; set; }
         public TimeSpan? Duration { get; set; }
@@ -20,29 +31,33 @@ namespace SpiderSharp
         public HttpRequester.Requester client;
         public HttpRequester.CachedRequester cachedRequester;
 
-        public DownloaderMiddleware()
+        public int TotalRequestOnline { get; private set; }
+        public int TotalRequestCached { get; private set; }
+
+        public DownloaderMiddleware(HttpRequester.EnumHttpProvider provider)
         {
-            this.HttpProvider = GlobalSettings.HttpProvider ?? HttpRequester.EnumHttpProvider.HttpClient;
+            this.HttpProvider = provider;
+            this.client = client ?? new HttpRequester.Requester(this.HttpProvider);
             this.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
             this.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
         }
 
         public async Task SimplePostAsync(string url)
         {
-            client = client ?? new HttpRequester.Requester(HttpProvider);
+            Log.Information($"SIMPLE POST: {url}");
             client.DefaultHeaders = DefaultHeaders;
-            client.Cookies = this.Cookies;
+            //client.Cookies = this.Cookies;
             await client.PostContentAsync(url, new System.Collections.Specialized.NameValueCollection());
             Cookies = client.Cookies;
         }
 
-        public async Task SimpleGetAsync(string url)
+        public async Task<string> SimpleGetAsync(string url)
         {
-            client = client ?? new HttpRequester.Requester(HttpProvider);
             client.DefaultHeaders = DefaultHeaders;
-            client.Cookies = this.Cookies;
-            await client.GetContentAsync(url);
+            //client.Cookies = this.Cookies;
+            var content = await client.GetContentAsync(url);
             Cookies = client.Cookies;
+            return content;
         }
 
         public async Task<string> RunAsync(string url)
@@ -50,17 +65,23 @@ namespace SpiderSharp
             string content = string.Empty;
             if (UseRedisCache)
             {
-                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(RedisConnectrionstring, HttpProvider, Duration);
+                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, RedisConnectrionstring, Duration);
                 cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
 
-                if (!string.IsNullOrEmpty(Cookies))
-                {
-                    cachedRequester.DefaultHeaders["Cookie"] = this.Cookies;
-                }
+                //if (!string.IsNullOrEmpty(Cookies))
+                //{
+                //    cachedRequester.DefaultHeaders["Cookie"] = this.Cookies;
+                //}
 
                 try
                 {
-                    content = await cachedRequester.GetContentAsync(url);
+                    var rc = await cachedRequester.GetContentAsync(url);
+                    if (rc.UsedCache)
+                        TotalRequestCached++;
+                    else
+                        TotalRequestOnline++;
+
+                    content = rc.Content;
                 }
                 catch (HttpRequestException ex) when (ex.Message.Contains("404"))
                 {
@@ -71,9 +92,9 @@ namespace SpiderSharp
             {
                 try
                 {
-                    client = client ?? new HttpRequester.Requester(HttpProvider);
+                    client.HttpBody = this.HttpBody;
+                    client.HttpMethod = this.HttpMethod;
                     client.DefaultHeaders = DefaultHeaders;
-                    client.Cookies = this.Cookies;
                     content = await client.GetContentAsync(url);
                     Cookies = client.Cookies;
                 }
