@@ -129,23 +129,7 @@ namespace SpiderSharp
                 var hasNextPage = false;
                 do
                 {
-                    Log.Information($"URL: {url}");
-                    await BeforeAsync();
-
-                    this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
-                    this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
-                    this.AngleDocument = SpiderSharp.AngleDocument.TryParse(sourceCode);
-
-#if DEBUG
-                    if (this.node != null)
-                    {
-                        Log.Debug($"URL: {url}");
-                        DebugFile = System.IO.Path.GetTempFileName() + ".html";
-                        System.IO.File.WriteAllText(DebugFile, sourceCode);
-
-                        Log.Debug($"Debug: {DebugFile}");
-                    }
-#endif
+                    RunDownloaderAsync().Wait();
 
                     Log.Information("Running... " + this.SpiderName);
                     ct.Url = this.url;
@@ -217,6 +201,27 @@ namespace SpiderSharp
         protected virtual void SetupBeforeRun()
         {
             Log.Debug("Setup for run");
+        }
+
+        protected async virtual Task RunDownloaderAsync()
+        {
+            Log.Information($"URL: {url}");
+            await BeforeAsync();
+
+            this.Json = SpiderSharp.Helpers.Json.TryParse(sourceCode);
+            this.node = SpiderSharp.Helpers.Html.TryParse(sourceCode);
+            this.AngleDocument = SpiderSharp.AngleDocument.TryParse(sourceCode);
+
+#if DEBUG
+            if (this.node != null)
+            {
+                Log.Debug($"URL: {url}");
+                DebugFile = System.IO.Path.GetTempFileName() + ".html";
+                System.IO.File.WriteAllText(DebugFile, sourceCode);
+
+                Log.Debug($"Debug: {DebugFile}");
+            }
+#endif
         }
 
         public void SetUrl(string url)
