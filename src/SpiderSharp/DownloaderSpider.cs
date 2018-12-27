@@ -66,8 +66,10 @@ namespace SpiderSharp
             if (UseRedisCache)
             {
                 cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, RedisConnectrionstring, Duration);
-                cachedRequester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
-
+                //cachedRequester.DefaultHeaders 
+                cachedRequester.requester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
+                cachedRequester.requester.HttpBody = this.HttpBody;
+                cachedRequester.requester.HttpMethod = this.HttpMethod;
                 //if (!string.IsNullOrEmpty(Cookies))
                 //{
                 //    cachedRequester.DefaultHeaders["Cookie"] = this.Cookies;
@@ -75,7 +77,7 @@ namespace SpiderSharp
 
                 try
                 {
-                    var rc = await cachedRequester.GetContentAsync(url);
+                    var rc = await cachedRequester.GetContentAsync(url, this.HttpBody);
                     if (rc.UsedCache)
                         TotalRequestCached++;
                     else
@@ -94,7 +96,7 @@ namespace SpiderSharp
                 {
                     client.HttpBody = this.HttpBody;
                     client.HttpMethod = this.HttpMethod;
-                    client.DefaultHeaders = DefaultHeaders;
+                    client.DefaultHeaders = DefaultHeaders ?? new Dictionary<string, string>();
                     content = await client.GetContentAsync(url);
                     Cookies = client.Cookies;
                 }

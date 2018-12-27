@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Polly;
@@ -13,7 +15,7 @@ namespace HttpRequester
     public class CachedRequester
     {
         readonly Data.Redis.RedisConnection redis;
-        readonly Requester requester;
+        public readonly Requester requester;
         TimeSpan? duration;
         public string Cookies { get; private set; }
 
@@ -26,19 +28,35 @@ namespace HttpRequester
             redis = new Data.Redis.RedisConnection(redisConnectionString);
         }
 
-        public static async Task DeleteContentAsync(string redisConnectionString, string url)
+        public static async Task DeleteContentAsync(string redisConnectionString, string url, string body)
         {
             var prefix = new Uri(url).Host;
 
             var c = new Data.Redis.RedisConnection(redisConnectionString);
-            var key = GetKey(url); // $"content:{prefix}:{url}";
+            var key = GetKey(url, body); // $"content:{prefix}:{url}";
             await c.DB.KeyDeleteAsync(key);
         }
 
-        static string GetKey(string url)
+        public static string MD5Hash(string input)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var result = md5.ComputeHash(Encoding.ASCII.GetBytes(input));
+                return Encoding.ASCII.GetString(result);
+            }
+        }
+
+        static string GetKey(string url, string body)
         {
             var uri = new Uri(url);
-            return $"{uri.Scheme}:{uri.Host}:{url}";
+            var template = $"{uri.Scheme}:{uri.Host}:{url}";
+
+            if (!string.IsNullOrEmpty(body))
+            {
+                template = template + "#" + MD5Hash(body);
+            }
+
+            return template;
             //return $"{AllReplace(url.ToString().Replace('/', ':'), ":")}";
         }
 
@@ -48,15 +66,14 @@ namespace HttpRequester
             return regex.Replace(text, character);
         }
 
-        public async Task<RequestContent> GetContentAsync(string url)
+        public async Task<RequestContent> GetContentAsync(string url, string body)
         {
             var prefix = new Uri(url).Host;
 
             if (DefaultHeaders.Any())
                 requester.DefaultHeaders = DefaultHeaders;
 
-            var key = GetKey(url); //$"content:{prefix}:{url}";
-
+            var key = GetKey(url, body); //$"content:{prefix}:{url}";
 
             var source = await redis.DB.StringGetAsync(key);
             if (!source.HasValue)
