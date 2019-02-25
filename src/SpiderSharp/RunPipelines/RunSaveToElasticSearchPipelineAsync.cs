@@ -1,4 +1,4 @@
-﻿using Data.ElasticSearch;
+﻿using DataFoundation.ElasticSearch;
 using Humanizer;
 using Newtonsoft.Json.Linq;
 using Serilog;

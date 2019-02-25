@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Redis", "src\Data.Redis\Data.Redis.csproj", "{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpRequester", "src\HttpRequester\HttpRequester.csproj", "{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderSharp", "src\SpiderSharp\SpiderSharp.csproj", "{EC5F3D21-9B9E-480B-BA9E-37202ED4302E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{48C820DE-FE92-40BB-AD5C-0CA11127112E}"
@@ -17,9 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapQuotes", "sample\Scrap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5891474-1DCD-46DF-8739-E301F1C08181}"
 	ProjectSection(SolutionItems) = preProject
-		deploy-src.cmd = deploy-src.cmd
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		custom-deploy.cmd = custom-deploy.cmd
 		LICENSE = LICENSE
 		README.md = README.md
+		sample-running.gif = sample-running.gif
 		SpiderSharp.nuspec = SpiderSharp.nuspec
 	EndProjectSection
 EndProject
@@ -27,24 +26,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{2749A786-B49
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrapShell", "app\ScrapShell\ScrapShell.csproj", "{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.MongoDB", "src\Data.MongoDB\Data.MongoDB.csproj", "{0858C784-D530-4E86-9F3C-CFD80BC529E4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.ElasticSearch", "src\Data.ElasticSearch\Data.ElasticSearch.csproj", "{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC5F3D21-9B9E-480B-BA9E-37202ED4302E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC5F3D21-9B9E-480B-BA9E-37202ED4302E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC5F3D21-9B9E-480B-BA9E-37202ED4302E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,26 +44,14 @@ Global
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0858C784-D530-4E86-9F3C-CFD80BC529E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0858C784-D530-4E86-9F3C-CFD80BC529E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0858C784-D530-4E86-9F3C-CFD80BC529E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0858C784-D530-4E86-9F3C-CFD80BC529E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{008D654B-9F4D-4FBB-B5A4-BBF712FE37E9} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
-		{4819C844-BEFE-4F38-A0FE-95B6C74B0F9F} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
 		{EC5F3D21-9B9E-480B-BA9E-37202ED4302E} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
 		{7BDB6EF6-A536-4D0E-B6B0-45386D4926B7} = {008F775F-C93C-46CD-A11F-3D49CC37F47A}
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E} = {2749A786-B495-40EE-8AB8-8A87FA2428A3}
-		{0858C784-D530-4E86-9F3C-CFD80BC529E4} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
-		{C4169D6D-C2BD-4343-8E5A-1C73F8C1D82E} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A101EFDB-BF3E-42DF-B04C-E8391E2E511F}

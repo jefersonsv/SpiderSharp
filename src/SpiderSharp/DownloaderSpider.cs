@@ -65,7 +65,7 @@ namespace SpiderSharp
             string content = string.Empty;
             if (UseRedisCache)
             {
-                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, RedisConnectrionstring, Duration);
+                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, duration: Duration, redisConnectionString: RedisConnectrionstring);
                 //cachedRequester.DefaultHeaders 
                 cachedRequester.requester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
                 cachedRequester.requester.HttpBody = this.HttpBody;

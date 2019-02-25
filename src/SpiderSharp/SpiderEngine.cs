@@ -1,7 +1,7 @@
 ﻿using EnsureThat;
 using Humanizer;
 using Newtonsoft.Json.Linq;
-using Data.MongoDB;
+using DataFoundation.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
