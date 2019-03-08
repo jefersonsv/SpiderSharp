@@ -11,6 +11,7 @@ skip_commits:
 configuration:
   - Release
 
+
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -24,6 +25,7 @@ build:
   verbosity: detailed
   publish_nuget: true
  
+
 before_build:
   - nuget restore
  
