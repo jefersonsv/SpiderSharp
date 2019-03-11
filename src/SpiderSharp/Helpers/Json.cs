@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ namespace SpiderSharp.Helpers
             }
             catch
             {
-
             }
 
             return null;
         }
+
         public static JToken CloneRenaming(JToken json, Func<string, string> map)
         {
             var prop = json as JProperty;

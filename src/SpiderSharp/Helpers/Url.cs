@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpiderSharp.Helpers
 {
@@ -16,6 +14,7 @@ namespace SpiderSharp.Helpers
 
             return uri.Uri.ToString();
         }
+
         public static string ReplaceBookmark(string url, string newQueryString)
         {
             if (string.IsNullOrEmpty(url))

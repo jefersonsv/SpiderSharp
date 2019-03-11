@@ -1,8 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
 
 namespace SpiderSharp
 {
@@ -18,9 +14,9 @@ namespace SpiderSharp
 
                 if (jtoken.Type == JTokenType.Array)
                 {
-                    JArray jarr = (JArray) jtoken;
+                    JArray jarr = (JArray)jtoken;
 
-                    for (int i=0; i<jarr.Count; i++)
+                    for (int i = 0; i < jarr.Count; i++)
                     {
                         if (jarr[i].Type == JTokenType.String)
                         {

@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Serilog;
 using System.Diagnostics;
-using AngleSharp.Dom.Html;
+using AngleSharp.Html.Dom;
 
 namespace SpiderSharp
 {

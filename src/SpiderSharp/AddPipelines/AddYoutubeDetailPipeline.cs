@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+
+using System;
+
 using YoutubeExplode;
-using YoutubeExplode.Models;
-using YoutubeExplode.Models.ClosedCaptions;
-using YoutubeExplode.Models.MediaStreams;
 
 namespace SpiderSharp
 {
-    
     public abstract partial class SpiderEngine
     {
         [Obsolete("Use RunYoutubeDetailPipeline in SpiderContext")]

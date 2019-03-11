@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AngleSharp.Dom;
-using AngleSharp.Dom.Html;
-using AngleSharp.Parser.Html;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 
 namespace SpiderSharp
 {
@@ -14,7 +11,7 @@ namespace SpiderSharp
             try
             {
                 var parser = new HtmlParser();
-                return parser.Parse(content);
+                return parser.ParseDocument(content);
             }
             catch (Exception ex)
             {

@@ -1,16 +1,13 @@
 ﻿using DataFoundation.ElasticSearch;
-using Humanizer;
+
 using Newtonsoft.Json.Linq;
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpiderSharp
 {
-    
     public abstract partial class SpiderEngine
     {
-
         [Obsolete("Use RunSaveToElasticSearchAsyncPipeline in SpiderContext")]
         public void AddSaveToElasticSearchAsyncPipeline(string index, string primaryKeyField)
         {
