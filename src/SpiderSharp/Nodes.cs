@@ -2,6 +2,7 @@
 using HtmlAgilityPack.CssSelectors.NetCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SpiderSharp
 {
@@ -28,6 +29,7 @@ namespace SpiderSharp
             return node != null;
         }
 
+        
         public string GetAttribute(string attribute)
         {
             return doc?.Attributes[attribute].Value;

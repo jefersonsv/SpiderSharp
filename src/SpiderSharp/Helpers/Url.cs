@@ -30,5 +30,8 @@ namespace SpiderSharp.Helpers
         {
             return ReplaceQueryString(url, string.Empty);
         }
+
+
+
     }
 }
