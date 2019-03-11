@@ -7,6 +7,7 @@ namespace SpiderSharp
 {
     public static class GlobalSettings
     {
+        public static string RedisPassword { get; set; }
         public static string RedisConnectionString { get; set; }
         public static string MongoConnectionString { get; set; }
         public static string ElasticSearchConnectionString { get; set; }

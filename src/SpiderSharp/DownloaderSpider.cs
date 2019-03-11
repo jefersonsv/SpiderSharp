@@ -23,6 +23,8 @@ namespace SpiderSharp
         public string HttpMethod { get; set; }
         public string HttpBody { get; set; }
         public string RedisConnectrionstring { get; set; }
+
+        public string RedisPassword { get; set; }
         public bool UseRedisCache { get; set; }
         public TimeSpan? Duration { get; set; }
         public string Cookies { get; set; }
@@ -40,6 +42,7 @@ namespace SpiderSharp
             this.client = client ?? new HttpRequester.Requester(this.HttpProvider);
             this.UseRedisCache = GlobalSettings.UseRedisCache ?? false;
             this.RedisConnectrionstring = GlobalSettings.RedisConnectionString ?? null;
+            this.RedisPassword = GlobalSettings.RedisPassword ?? null;
         }
 
         public async Task SimplePostAsync(string url)
@@ -65,7 +68,7 @@ namespace SpiderSharp
             string content = string.Empty;
             if (UseRedisCache)
             {
-                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, duration: Duration, redisConnectionString: RedisConnectrionstring);
+                cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, duration: Duration, redisConnectionString: RedisConnectrionstring, redisPassword: this.RedisPassword);
                 //cachedRequester.DefaultHeaders 
                 cachedRequester.requester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
                 cachedRequester.requester.HttpBody = this.HttpBody;
