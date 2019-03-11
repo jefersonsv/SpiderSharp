@@ -26,8 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{2749A786-B49
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrapShell", "app\ScrapShell\ScrapShell.csproj", "{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderSharp.Text", "SpiderSharp.Text\SpiderSharp.Text.csproj", "{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,10 +44,6 @@ Global
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,7 +52,6 @@ Global
 		{EC5F3D21-9B9E-480B-BA9E-37202ED4302E} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
 		{7BDB6EF6-A536-4D0E-B6B0-45386D4926B7} = {008F775F-C93C-46CD-A11F-3D49CC37F47A}
 		{C3E723AA-D858-4619-A9D1-F4EBEB114B9E} = {2749A786-B495-40EE-8AB8-8A87FA2428A3}
-		{FDB6A65F-D8B8-48DF-B1C1-5EC46A45FD63} = {48C820DE-FE92-40BB-AD5C-0CA11127112E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A101EFDB-BF3E-42DF-B04C-E8391E2E511F}

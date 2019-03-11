@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoadWebsiteTest.cs" />
     <Compile Include="RegexTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -55,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\SpiderSharp\SpiderSharp.csproj">
+    <ProjectReference Include="..\SpiderSharp\SpiderSharp.csproj">
       <Project>{ec5f3d21-9b9e-480b-ba9e-37202ed4302e}</Project>
       <Name>SpiderSharp</Name>
     </ProjectReference>
