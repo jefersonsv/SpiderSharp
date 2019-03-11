@@ -14,7 +14,9 @@ namespace ScrapShell
         static readonly Regex loadRegex = new Regex("load (?<url>.*)");
         static readonly Regex setRegex = new Regex("set (?<driver>.*)");
         static readonly Regex saveRegex = new Regex("save (?<filename>.*)");
-        static readonly Regex cssRegex = new Regex("css (?<selector>.*)");
+        static readonly Regex innertext = new Regex("innertext (?<selector>.*)");
+        static readonly Regex innerhtml = new Regex("innerhtml (?<selector>.*)");
+        static readonly Regex links = new Regex("links (?<selector>.*)");
         static readonly Regex browseRegex = new Regex("browse");
         static readonly Regex quitRegex = new Regex("quit");
         static readonly Regex helpRegex = new Regex("help");
@@ -40,21 +42,20 @@ namespace ScrapShell
                 PrintCommands();
                 while (true)
                 {
-                    Console.WriteLine(string.Empty);
-                    Console.WriteLine("Type command: ");
                     string input = ReadLine.Read("# ");
+                    if (string.IsNullOrWhiteSpace(input))
+                        continue;
+
+                    Console.WriteLine(string.Empty);
+                    // Console.WriteLine("Type command: ");
 
                     if (loadRegex.IsMatch(input))
                     {
                         var url = loadRegex.Match(input).Groups["url"].Value;
 
-                        Uri uri = null;
-                        if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+                        if (File.Exists(url))
                         {
-                            if (File.Exists(url))
-                                content = System.IO.File.ReadAllText(url);
-                            else
-                                Console.WriteLine("file not found");
+                            content = System.IO.File.ReadAllText(url);
                         }
                         else
                         {
@@ -67,9 +68,14 @@ namespace ScrapShell
                                 HttpRequester.ChromeHeadlessPersistentClient httpRequester = new HttpRequester.ChromeHeadlessPersistentClient();
                                 content = httpRequester.GoAndGetContentAsync(url).Result;
                             }
+
+                            var tmp = System.IO.Path.GetTempFileName() + ".html";
+                            System.IO.File.WriteAllText(tmp, content);
+                            Console.WriteLine($"Content saved: {tmp}");
                         }
 
                         Console.WriteLine($"{content.Count()} bytes loaded");
+                        continue;
                     }
 
                     if (setRegex.IsMatch(input))
@@ -88,11 +94,13 @@ namespace ScrapShell
                                 Console.WriteLine("AngleSharp has been set");
                                 break;
                         }
+
+                        continue;
                     }
 
-                    if (cssRegex.IsMatch(input))
+                    if (innertext.IsMatch(input))
                     {
-                        var selector = setRegex.Match(input).Groups["selector"].Value;
+                        var selector = innertext.Match(input).Groups["selector"].Value;
                         if (string.IsNullOrEmpty(selector))
                         {
                             Console.WriteLine("You must type the selector");
@@ -101,7 +109,41 @@ namespace ScrapShell
 
                         Nodes nodes = new Nodes(content);
                         var res = nodes.SelectNodes(selector);
+                        res.ToList().ForEach(a => Console.WriteLine(a.GetInnerText()));
+
+                        continue;
+                    }
+
+                    if (innerhtml.IsMatch(input))
+                    {
+                        var selector = innerhtml.Match(input).Groups["selector"].Value;
+                        if (string.IsNullOrEmpty(selector))
+                        {
+                            Console.WriteLine("You must type the selector");
+                            continue;
+                        }
+
+                        Nodes nodes = new Nodes(content);
+                        var res = nodes.SelectNodes(selector);
+                        res.ToList().ForEach(a => Console.WriteLine(a.GetInnerHtml()));
+
+                        continue;
+                    }
+
+                    if (links.IsMatch(input))
+                    {
+                        var selector = links.Match(input).Groups["selector"].Value;
+                        if (string.IsNullOrEmpty(selector))
+                        {
+                            Console.WriteLine("You must type the selector");
+                            continue;
+                        }
+
+                        Nodes nodes = new Nodes(content);
+                        var res = nodes.SelectHref(selector);
                         res.ToList().ForEach(a => Console.WriteLine(a));
+
+                        continue;
                     }
 
                     if (saveRegex.IsMatch(input))
@@ -116,6 +158,7 @@ namespace ScrapShell
                         System.IO.File.WriteAllText(filename, content);
 
                         Console.WriteLine("Saved");
+                        continue;
                     }
 
                     if (browseRegex.IsMatch(input))
@@ -131,11 +174,13 @@ namespace ScrapShell
                         OpenBrowser(tmp);
 
                         Console.WriteLine("Browser opened");
+                        continue;
                     }
 
                     if (helpRegex.IsMatch(input))
                     {
                         PrintCommands();
+                        continue;
                     }
 
                     if (quitRegex.IsMatch(input))
@@ -143,6 +188,8 @@ namespace ScrapShell
                         Console.WriteLine("Exiting");
                         break;
                     }
+
+                    Console.WriteLine("Command not found");
                 }
             }
         }
@@ -197,6 +244,9 @@ namespace ScrapShell
             Console.WriteLine("load => load url or local file");
             Console.WriteLine("save => save content to local file");
             Console.WriteLine("set => set HttpRequest that you want");
+            Console.WriteLine("innertext => select innertext using css selector");
+            Console.WriteLine("innerhtml => select innerhtml using css selector");
+            Console.WriteLine("links => select links using css selector");
             Console.WriteLine("browse => open browser with content");
             Console.WriteLine("quit => exit program");
             Console.WriteLine("help => show all commands");

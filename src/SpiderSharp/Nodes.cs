@@ -104,6 +104,11 @@ namespace SpiderSharp
             return System.Web.HttpUtility.HtmlDecode(doc?.InnerText);
         }
 
+        public string GetInnerHtml()
+        {
+            return System.Web.HttpUtility.HtmlDecode(doc?.InnerHtml);
+        }
+
         public string GetHtml()
         {
             return doc.OwnerDocument.DocumentNode.OuterHtml;
