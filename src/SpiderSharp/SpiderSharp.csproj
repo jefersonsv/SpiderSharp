@@ -34,4 +34,8 @@
     <PackageReference Include="YoutubeExplode" Version="4.5.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DataFoundation\src\DataFoundation.ElasticSearch\DataFoundation.ElasticSearch.csproj" />
+  </ItemGroup>
+
 </Project>

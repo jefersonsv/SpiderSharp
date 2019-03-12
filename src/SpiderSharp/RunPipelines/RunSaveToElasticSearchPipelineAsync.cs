@@ -17,7 +17,7 @@ namespace SpiderSharp
         {
             var it = this.Data;
 
-            var elastic = new ElasticConnection(index, type, GlobalSettings.ElasticSearchConnectionString);
+            var elastic = new ElasticConnection(index, GlobalSettings.ElasticSearchConnectionString, type: type);
             JObject obj = new JObject(it);
             var json = obj.ToString();
 
