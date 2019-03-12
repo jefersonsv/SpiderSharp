@@ -1,8 +1,13 @@
 ﻿using HtmlAgilityPack;
 using HtmlAgilityPack.CssSelectors.NetCore;
+using Jil;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SpiderSharp.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SpiderSharp
 {
@@ -29,7 +34,7 @@ namespace SpiderSharp
             return node != null;
         }
 
-        
+
         public string GetAttribute(string attribute)
         {
             return doc?.Attributes[attribute].Value;
@@ -109,6 +114,110 @@ namespace SpiderSharp
             return System.Web.HttpUtility.HtmlDecode(doc?.InnerHtml);
         }
 
+        public JObject GetJson()
+        {
+            JObject obj = new JObject();
+            obj.Add(new JProperty(doc?.Name, HtmlNodeToJObject(doc)));
+
+            return obj;
+        }
+
+
+        static JObject HtmlNodeToJObject(HtmlNode node)
+        {
+            JObject obj = new JObject();
+
+            node?.ChildNodes.ToList().ForEach(a =>
+            {
+                // add childs
+                if (a.NodeType == HtmlNodeType.Element)
+                {
+                    var no = HtmlNodeToJObject(a);
+                    if (no.Children().Count() > 0)
+                    {
+                        // verifiy if is unique or array
+                        if (node?.ChildNodes.Where(w => w.Name == a.Name).Count() > 1)
+                        {
+                            // is array
+
+                            // verify if is first
+                            if (obj.ContainsKey(a.Name))
+                            {
+                                // second, third
+                                JArray arr = obj[a.Name] as JArray;
+                                arr.Add(no);
+                            }
+                            else
+                            {
+                                // first
+                                obj.Add(new JProperty(a.Name, new JArray(no)));
+                            }
+                        }
+                        else
+                        {
+                            // is unique
+                            obj.Add(new JProperty(a.Name, no));
+                        }
+                    }
+                }
+                else if (a.NodeType == HtmlNodeType.Text)
+                {
+                    if (!string.IsNullOrWhiteSpace(a.InnerText))
+                    {
+                        var ct = System.Web.HttpUtility.HtmlDecode(a.InnerText.Trim());
+                        if (!obj.ContainsKey(a.Name))
+                        {
+                            obj.Add(new JProperty(a.Name, ct));
+                        }
+                        else
+                        {
+                            obj.Add(new JProperty(a.Name + "_" + obj.Count, ct));
+                        }
+                    }
+                }
+            });
+
+            // add attributes
+            node?.Attributes.ToList().ForEach(a => {
+
+                if (!string.IsNullOrWhiteSpace(a.Value))
+                {
+                    string ct = System.Web.HttpUtility.HtmlDecode(a.Value.ToString());
+                    // verifiy if is unique or array
+                    if (node?.Attributes.Where(w => w.Name == a.Name).Count() > 1)
+                    {
+                        // is array
+
+                        // verify if is first
+                        if (obj.ContainsKey($"@{a.Name}"))
+                        {
+                            // second, third
+                            JArray arr = obj[$"@{a.Name}"] as JArray;
+                            arr.Add(ct);
+                        }
+                        else
+                        {
+                            // first
+                            obj.Add(new JProperty($"@{a.Name}", new JArray(ct)));
+                        }
+                    }
+                    else
+                    {
+                        // is single
+                        obj.Add(new JProperty($"@{a.Name}", ct));
+                    }
+                }
+            });
+
+            return obj;
+        }
+
+
+        public string GetOuterHtml()
+        {
+            return System.Web.HttpUtility.HtmlDecode(doc?.OuterHtml);
+        }
+
         public string GetHtml()
         {
             return doc.OwnerDocument.DocumentNode.OuterHtml;
@@ -139,7 +248,9 @@ namespace SpiderSharp
         public IEnumerable<string> SelectHref(string cssSelector)
         {
             var nodes = doc.QuerySelectorAll(cssSelector);
-            return nodes?.Select(s => s.Attributes["href"].Value);
+            return nodes?
+                .Where(w => w.Attributes.Contains("href"))
+                .Select(s => s.Attributes["href"].Value);
         }
 
         public IEnumerable<string> SelectInnerText(string cssSelector)

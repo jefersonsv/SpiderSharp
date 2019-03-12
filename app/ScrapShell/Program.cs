@@ -1,10 +1,13 @@
 ﻿using ConsoleMenu;
+using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 using SpiderSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ScrapShell
@@ -64,8 +67,13 @@ namespace ScrapShell
             }
             else
             {
+                if (string.IsNullOrEmpty(filename))
+                {
+                    filename = Path.GetTempFileName() + ".html";
+                }
+
                 System.IO.File.WriteAllText(filename, content);
-                Console.WriteLine("Saved");
+                Console.WriteLine($"Saved {filename}");
             }
         }
 
@@ -88,6 +96,11 @@ namespace ScrapShell
 
                 Console.WriteLine("Browser opened");
             }
+        }
+
+        static void ClearCommand(Match match)
+        {
+            Console.Clear();
         }
 
         static void InnerTextCommand(Match match)
@@ -122,6 +135,50 @@ namespace ScrapShell
             }
         }
 
+        static void OuterHtmlCommand(Match match)
+        {
+            var selector = match.Groups["selector"].Value;
+            if (string.IsNullOrEmpty(selector))
+            {
+                Console.WriteLine("You must type the selector");
+            }
+            else
+            {
+                Nodes nodes = new Nodes(content);
+                var res = nodes.SelectNodes(selector);
+                res.ToList().ForEach(a => Console.WriteLine(a.GetOuterHtml()));
+                Console.WriteLine($"{res.ToList().Count} itens found");
+            }
+        }
+
+        static void JsonCommand(Match match)
+        {
+            var selector = match.Groups["selector"].Value;
+            if (string.IsNullOrEmpty(selector))
+            {
+                Console.WriteLine("You must type the selector");
+            }
+            else
+            {
+                Nodes nodes = new Nodes(content);
+                var res = nodes.SelectNodes(selector);
+
+                JArray arr = new JArray();
+                var sb = new StringBuilder();
+                res.ToList().ForEach(a => {
+                    var json = a.GetJson();
+                    arr.Add(json);
+                    sb.AppendLine(json.ToString());
+                });
+
+                Console.WriteLine(sb.ToString());
+                var filename = Path.GetTempFileName() + ".json";
+                System.IO.File.WriteAllText(filename, arr.ToString());
+                Console.WriteLine($"{filename} saved");
+                Console.WriteLine($"{res.ToList().Count} itens found");
+            }
+        }
+
         static void LinksCommand(Match match)
         {
             var selector = match.Groups["selector"].Value;
@@ -137,16 +194,19 @@ namespace ScrapShell
                 Console.WriteLine($"{res.ToList().Count} itens found");
             }
         }
-
+        
         static void Main(string[] args)
         {
-            var mainMenu = new CommandMenu("Main");
+                       var mainMenu = new CommandMenu("Main");
             mainMenu.AddCommand("set (?<driver>anglesharp)", SetCommand, "set => set HttpRequest that you want");
             mainMenu.AddCommand("load (?<url>.*)", LoadCommand, "load => load url or local file");
             mainMenu.AddCommand("save (?<filename>.*)", SaveCommand, "save => save content to local file");
             mainMenu.AddCommand("innertext (?<selector>.*)", InnerTextCommand, "innertext => select innertext using css selector");
             mainMenu.AddCommand("innerhtml (?<selector>.*)", InnerHtmlCommand, "innerhtml => select innerhtml using css selector");
+            mainMenu.AddCommand("outerhtml (?<selector>.*)", OuterHtmlCommand, "outerhtml => select innerhtml using css selector");
             mainMenu.AddCommand("links (?<selector>.*)", LinksCommand, "links => select links using css selector");
+            mainMenu.AddCommand("json (?<selector>.*)", JsonCommand, "json => select links using css selector");
+            mainMenu.AddCommand("cls|clear", ClearCommand, "cls => clear screen");
             mainMenu.AddCommand("browse", BrowseCommand, "browse => open browser with content");
             mainMenu.AddCommand("help", HelpCommand, "help => show all commands");
             mainMenu.AddExitCommand("exit|quit|back", "quit => exit program");

@@ -61,12 +61,12 @@ namespace ScrapShell
 
         public void Execute()
         {
+            Console.WriteLine(string.Empty);
             ReadLine.HistoryEnabled = true;
 
             while (true)
             {
                 var isValid = false;
-                Console.WriteLine(string.Empty);
                 string input = ReadLine.Read($"{prefix} # ");
 
                 foreach (var item in dict)
@@ -91,12 +91,17 @@ namespace ScrapShell
                     }
                 }
 
-                if (!isValid)
+                if (!string.IsNullOrWhiteSpace(input))
                 {
-                    if (OnCommandNotFound == null)
-                        OnCommandNotFound += CommandMenu_OnCommandNotFound;
+                    if (!isValid)
+                    {
+                        if (OnCommandNotFound == null)
+                            OnCommandNotFound += CommandMenu_OnCommandNotFound;
 
-                    OnCommandNotFound();
+                        OnCommandNotFound();
+                    }
+
+                    Console.WriteLine(string.Empty);
                 }
             }
         }
