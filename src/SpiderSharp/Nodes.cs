@@ -1,6 +1,5 @@
 ﻿using HtmlAgilityPack;
 using HtmlAgilityPack.CssSelectors.NetCore;
-using Jil;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SpiderSharp.Helpers;

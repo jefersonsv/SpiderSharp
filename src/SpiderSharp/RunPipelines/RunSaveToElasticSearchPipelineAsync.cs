@@ -13,11 +13,11 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public async Task RunSaveToElasticSearchPipelineAsync(string index, string primaryKeyField = null)
+        public async Task RunSaveToElasticSearchPipelineAsync(string index, string type = null, string primaryKeyField = null)
         {
             var it = this.Data;
 
-            var elastic = new ElasticConnection(index, GlobalSettings.ElasticSearchConnectionString);
+            var elastic = new ElasticConnection(index, type, GlobalSettings.ElasticSearchConnectionString);
             JObject obj = new JObject(it);
             var json = obj.ToString();
 

@@ -23,5 +23,13 @@ namespace SpiderSharp
             //this.Data = JObject.FromObject(new ExpandoObject());
             this.Data = new ExpandoObject();
         }
+
+        public override string ToString()
+        {
+            if (this.Data != null)
+                return this.Data.ToString();
+            else
+                return null;
+        }
     }
 }
