@@ -37,7 +37,51 @@ namespace ScrapShell
             if (action == null)
                 throw new Exception("The action cannot be null");
 
+            if (CheckCollide(regex))
+                throw new Exception($"The '{regex}' will collide has other command");
+
             dict.Add(regex, new CommandItem { Regex = new Regex(regex, RegexOptions.IgnoreCase), Action = action, Description = description });
+        }
+
+        public static string StripNameGroups(string regex)
+        {
+            return Regex.Replace(regex, @"\?<.*?>", String.Empty);
+        }
+
+        bool Collide(string regex1, string regex2)
+        {
+            var regexStriped1 = StripNameGroups(regex1);
+            var regexStriped2 = StripNameGroups(regex2);
+
+            var automaton1 = new Fare.RegExp(regexStriped1).ToAutomaton();
+            var automaton2 = new Fare.RegExp(regexStriped2).ToAutomaton();
+
+            var intersection = automaton1.Intersection(automaton2);
+
+            var random1 = new Random(Environment.TickCount);
+            var sut1 = new Fare.Xeger(regexStriped1, random1);
+
+            var random2 = new Random(Environment.TickCount);
+            var sut2 = new Fare.Xeger(regexStriped2, random2);
+
+            var gen1 = sut1.Generate();
+            var gen2 = sut2.Generate();
+
+            var result1 = intersection.Run(gen1);
+            var result2 = intersection.Run(gen2);
+
+            return result1 || result2;
+        }
+
+        bool CheckCollide(string regex)
+        {
+            foreach (var item in dict)
+            {
+                if (Collide(item.Key, regex))
+                    return true;
+            }
+
+            return false;
         }
 
         public void AddExitCommand(string regex, string description = null)

@@ -11,7 +11,7 @@ namespace ScrapShell
 {
     public class Program
     {
-        static HttpRequester.Requester requester;
+        static HttpRequester.RequesterCached requester;
         static string content;
         static CommandMenu currentMenu;
 
@@ -27,12 +27,12 @@ namespace ScrapShell
             {
                 if (requester != null)
                 {
-                    content = requester.GetContentAsync(url).Result;
+                    content = requester.GetContentAsync(url).Result.StringContent;
                 }
                 else
                 {
-                    HttpRequester.ChromeHeadlessPersistentClient httpRequester = new HttpRequester.ChromeHeadlessPersistentClient();
-                    content = httpRequester.GoAndGetContentAsync(url).Result;
+                    HttpRequester.Engine.ChromePersistentClient httpRequester = new HttpRequester.Engine.ChromePersistentClient(true);
+                    content = httpRequester.GetContentAsync(url).Result;
                 }
 
                 var tmp = System.IO.Path.GetTempFileName() + ".html";
@@ -48,8 +48,13 @@ namespace ScrapShell
             switch (match.Groups["driver"].Value)
             {
                 case "anglesharp":
-                    requester = new HttpRequester.Requester(HttpRequester.EnumHttpProvider.AngleSharp);
+                    requester = new HttpRequester.RequesterCached(HttpRequester.EnumHttpProvider.AngleSharp);
                     Console.WriteLine("AngleSharp has been set");
+                    break;
+
+                case "httpclient":
+                    requester = new HttpRequester.RequesterCached(HttpRequester.EnumHttpProvider.HttpClient);
+                    Console.WriteLine("HttpClient has been set");
                     break;
             }
         }
@@ -194,8 +199,8 @@ namespace ScrapShell
         
         static void Main(string[] args)
         {
-                       var mainMenu = new CommandMenu("Main");
-            mainMenu.AddCommand("set (?<driver>anglesharp)", SetCommand, "set => set HttpRequest that you want");
+            var mainMenu = new CommandMenu("Main");
+            mainMenu.AddCommand("set (?<driver>anglesharp|httpclient)", SetCommand, "set => set HttpRequest that you want");
             mainMenu.AddCommand("load (?<url>.*)", LoadCommand, "load => load url or local file");
             mainMenu.AddCommand("save (?<filename>.*)", SaveCommand, "save => save content to local file");
             mainMenu.AddCommand("innertext (?<selector>.*)", InnerTextCommand, "innertext => select innertext using css selector");

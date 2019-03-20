@@ -124,12 +124,12 @@ namespace SpiderSharp
                 ct.Spider = this.SpiderName;
                 ct.Bag = JObject.FromObject(ViewBag);
 
-                SetupBeforeRun();
+                await SetupBeforeRunAsync();
 
                 var hasNextPage = false;
                 do
                 {
-                    RunDownloaderAsync().Wait();
+                    await RunDownloaderAsync();
 
                     Log.Information("Running... " + this.SpiderName);
                     ct.Url = this.url;
@@ -181,6 +181,7 @@ namespace SpiderSharp
             catch (Exception ex)
             {
                 ct.Data.SpiderEngine = JsonConvert.SerializeObject(this);
+                ct.Data.Exception = JsonConvert.SerializeObject(ex);
                 //ct.RunEmbedMetadataPipeline();
                 Log.Error(ex, ct.Data.ToString());
             }
@@ -198,7 +199,7 @@ namespace SpiderSharp
             Log.Debug("Error Pipeline");
         }
 
-        protected virtual void SetupBeforeRun()
+        protected async virtual Task SetupBeforeRunAsync()
         {
             Log.Debug("Setup for run");
         }

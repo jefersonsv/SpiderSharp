@@ -17,11 +17,11 @@
     <PackageReference Include="DataFoundation.ElasticSearch" Version="1.0.6" />
     <PackageReference Include="DataFoundation.InfluxDB" Version="1.0.5" />
     <PackageReference Include="DataFoundation.MongoDB" Version="1.0.5" />
-    <PackageReference Include="DataFoundation.Redis" Version="1.0.5" />
+    <PackageReference Include="DataFoundation.Redis" Version="1.0.7" />
     <PackageReference Include="EnsureThatCore" Version="1.0.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.9.2" />
     <PackageReference Include="HtmlAgilityPack.CssSelectors.NetCore" Version="1.1.1" />
-    <PackageReference Include="HttpRequester" Version="1.0.7" />
+    <PackageReference Include="HttpRequester" Version="1.0.16" />
     <PackageReference Include="Humanizer" Version="2.5.16" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
