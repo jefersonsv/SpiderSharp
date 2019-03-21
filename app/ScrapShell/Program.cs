@@ -27,7 +27,7 @@ namespace ScrapShell
             {
                 if (requester != null)
                 {
-                    content = requester.GetContentAsync(url).Result.StringContent;
+                    content = requester.GetAsync(url).Result.StringContent;
                 }
                 else
                 {

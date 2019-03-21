@@ -8,6 +8,11 @@ namespace SpiderSharp.Helpers
 {
     public static class Json
     {
+        public static bool IsJson(string content)
+        {
+            return TryParse(content) != null;
+        }
+
         public static JToken TryParse(string content)
         {
             try

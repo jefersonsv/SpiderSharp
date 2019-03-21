@@ -167,7 +167,17 @@ namespace SpiderSharp
                     if (!nofollow)
                     {
                         var nextPage = this.FollowPage();
-                        hasNextPage = !string.IsNullOrEmpty(nextPage) && nextPage != url;
+                        if (this.Downloader.HttpMethod == "POST")
+                        {
+                            // post the nextPage can be same of url
+                            hasNextPage = !string.IsNullOrEmpty(nextPage);
+                        }
+                        else
+                        {
+                            // get required that nextPage different of url
+                            hasNextPage = !string.IsNullOrEmpty(nextPage) && nextPage != url;
+                        }
+
                         if (hasNextPage)
                         {
                             this.SetUrl(nextPage);

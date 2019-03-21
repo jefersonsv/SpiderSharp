@@ -57,54 +57,27 @@ namespace SpiderSharp
             }
         }
 
-        public async Task SimplePostAsync(string url)
-        {
-            Log.Information($"SIMPLE POST: {url}");
-            //client.DefaultHeaders = DefaultHeaders;
-            DefaultHeaders.ToList().ForEach(a => client.SetHeader(a.Key, a.Value));
-            //client.Cookies = this.Cookies;
-            client.SetHeader("Cookie", this.Cookies);
-            await client.PostContentAsync(url, (string) null);
-            Cookies = client.LastCookie;
-        }
-
-        public async Task<string> SimpleGetAsync(string url)
-        {
-            DefaultHeaders.ToList().ForEach(a => client.SetHeader(a.Key, a.Value));
-            //client.DefaultHeaders = DefaultHeaders;
-            //client.Cookies = this.Cookies;
-            var content = await cachedRequester.GetContentAsync(url);
-            if (content.HasErrors)
-            {
-                throw content.Exception;
-            }
-            Cookies = client.LastCookie;
-            return content.StringContent;
-        }
+        //public async Task SimplePostAsync(string url)
+        //{
+        //    Log.Information($"SIMPLE POST: {url}");
+        //    //client.DefaultHeaders = DefaultHeaders;
+        //    DefaultHeaders.ToList().ForEach(a => client.SetHeader(a.Key, a.Value));
+        //    //client.Cookies = this.Cookies;
+        //    client.SetHeader("Cookie", this.Cookies);
+        //    await client.PostAsync(url, (string) null);
+        //    Cookies = client.LastCookie;
+        //}
 
         public async Task<string> RunAsync(string url)
         {
             string content = string.Empty;
-            //if (UseRedisCache)
-            //{
-            //cachedRequester = cachedRequester ?? new HttpRequester.CachedRequester(this.client, duration: Duration, redisConnectionString: RedisConnectrionstring, redisPassword: this.RedisPassword);
-            //cachedRequester.DefaultHeaders 
-
-            //cachedRequester.requester.DefaultHeaders = this.DefaultHeaders ?? new Dictionary<string, string>();
-            //cachedRequester.requester.HttpBody = this.HttpBody;
-            //cachedRequester.requester.HttpMethod = this.HttpMethod;
-
-            //if (!string.IsNullOrEmpty(Cookies))
-            //{
-            //    cachedRequester.DefaultHeaders["Cookie"] = this.Cookies;
-            //}
-
+        
             try
             {
                 string rc = null;
                 if (string.IsNullOrEmpty(this.HttpMethod) || this.HttpMethod == "GET")
                 {
-                    var ct = await cachedRequester.GetContentAsync(url);
+                    var ct = await cachedRequester.GetAsync(url);
                     if (ct.HasErrors)
                     {
                         throw ct.Exception;
@@ -122,17 +95,29 @@ namespace SpiderSharp
                     ResponseContext ct = null;
                     if (!string.IsNullOrEmpty(this.HttpBody))
                     {
-                        ct = await cachedRequester.PostContentAsync(url, this.HttpBody);
+                        ct = await cachedRequester.PostAsync(url, this.HttpBody);
+                        if (ct.HasErrors)
+                        {
+                            throw ct.Exception;
+                        }
                         rc = ct.StringContent;
                     }
                     else if (PostData.Any())
                     {
-                        ct = await cachedRequester.PostContentAsync(url, this.PostData);
+                        ct = await cachedRequester.PostAsync(url, this.PostData);
+                        if (ct.HasErrors)
+                        {
+                            throw ct.Exception;
+                        }
                         rc = ct.StringContent;
                     }
                     else
                     {
-                        ct = await cachedRequester.PostContentAsync(url, string.Empty);
+                        ct = await cachedRequester.PostAsync(url, string.Empty);
+                        if (ct.HasErrors)
+                        {
+                            throw ct.Exception;
+                        }
                     }
 
                     if (ct.HasUsedCache)
@@ -147,29 +132,7 @@ namespace SpiderSharp
             {
                 return string.Empty;
             }
-            //}
-            //else
-            //{
-            //    try
-            //    {
-            //        client.HttpBody = this.HttpBody;
-            //        client.HttpMethod = this.HttpMethod;
-            //        client.DefaultHeaders = DefaultHeaders ?? new Dictionary<string, string>();
-            //        content = await client.GetContentAsync(url);
-            //        Cookies = client.Cookies;
-            //    }
-            //    catch (HttpRequestException ex) when (ex.Message.Contains("404"))
-            //    {
-            //        return string.Empty;
-            //    }
-            //}
-
-            /*
-            if (ExecuteTidy)
-            {
-                return content;
-            }
-            */
+         
             return content;
         }
     }
