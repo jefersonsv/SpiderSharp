@@ -41,6 +41,11 @@ namespace SpiderSharp
         public int TotalRequestOnline { get; private set; }
         public int TotalRequestCached { get; private set; }
 
+        public bool IsFirstMultipleByNumberOnlineRequest(int number)
+        {
+            return this.TotalRequestOnline % number == 0;
+        }
+
         public DownloaderMiddleware(HttpRequester.EnumHttpProvider provider)
         {
             this.HttpProvider = provider;

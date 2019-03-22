@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug2\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,8 +55,8 @@
     <Reference Include="HtmlAgilityPack.CssSelectors.NetCore, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\HtmlAgilityPack.CssSelectors.NetCore.1.1.1\lib\netstandard1.5\HtmlAgilityPack.CssSelectors.NetCore.dll</HintPath>
     </Reference>
-    <Reference Include="HttpRequester, Version=1.0.19.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HttpRequester.1.0.19\lib\netstandard2.0\HttpRequester.dll</HintPath>
+    <Reference Include="HttpRequester, Version=1.0.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HttpRequester.1.0.21\lib\netstandard2.0\HttpRequester.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer, Version=2.5.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Humanizer.Core.2.5.16\lib\netstandard2.0\Humanizer.dll</HintPath>

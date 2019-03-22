@@ -39,6 +39,14 @@ namespace SpiderSharp.Helpers
             return IntOrNull(num);
         }
 
+        public static string NumbericOrNull(string value)
+        {
+            if (value == null)
+                return null;
+
+            return Regex.Match(value, @"\d+").Value;
+        }
+
         public static JToken JsonList(object obj)
         {
             return JToken.FromObject(obj);

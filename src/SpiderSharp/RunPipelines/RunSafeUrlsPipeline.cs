@@ -9,8 +9,10 @@ namespace SpiderSharp
 {
     public partial class SpiderContext
     {
-        public void RunSafeUrlsPipeline(string domain, params string[] tokens)
+        public void RunSafeUrlsPipeline(string baseUrl, params string[] tokens)
         {
+            var baseUrlSlashed = baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
+
             JObject json = JObject.FromObject(this.Data);
 
             foreach (var token in tokens)
@@ -31,34 +33,24 @@ namespace SpiderSharp
                     {
                         if (jarr[i].Type == JTokenType.String)
                         {
-                            if (!jarr[i].ToString().ToLower().StartsWith(domain.ToLower()))
+                            if (!jarr[i].ToString().ToLower().StartsWith(baseUrlSlashed.ToLower()))
                             {
-                                jarr[i] = $"{domain}{jarr[i].ToString()}";
+                                jarr[i] = $"{baseUrlSlashed}{jarr[i].ToString().TrimStart('/')}";
                             }
                         }
                     }
                 }
                 else if (jtoken.Type == JTokenType.String)
                 {
-                    string link = jtoken.Value<string>().ToString().ToLower();
+                    string link = jtoken.ToString().ToLower();
 
                     if (!string.IsNullOrEmpty(link))
                     {
-                        domain = domain.EndsWith("/") ? domain : domain + "/";
-
                         // add schema/domain/port if needed
-                        if (!link.StartsWith(domain.ToLower().Trim()))
+                        if (!link.StartsWith(baseUrlSlashed.ToLower().Trim()))
                         {
-                            var concat = jtoken.Value<string>().ToString();
-                            if (concat.StartsWith("/"))
-                            {
-                                concat = concat.Substring(1);
-                            }
-
-                            link = domain + concat;
-
-                            Uri uri = null;
-                            if (Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out uri))
+                            var concat = jtoken.ToString().TrimStart('/');
+                            if (Uri.TryCreate(baseUrlSlashed + concat, UriKind.RelativeOrAbsolute, out Uri uri))
                             {
                                 JValue property = (JValue)jtoken;
                                 property.Value = uri.ToString();
