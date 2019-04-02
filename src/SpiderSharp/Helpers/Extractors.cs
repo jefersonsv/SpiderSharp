@@ -52,6 +52,15 @@ namespace SpiderSharp.Helpers
             return JToken.FromObject(obj);
         }
 
+        public static string RegexUrl(string text)
+        {
+            var match = RegexLibrary.Url.Match(text);
+            if (match.Success)
+                return match.Value;
+
+            return null;
+        }
+
         public static string RegexFirstGroup(string text, string pattern)
         {
             if (string.IsNullOrEmpty(text))

@@ -20,7 +20,7 @@ namespace SpiderSharp
                     {
                         if (jarr[i].Type == JTokenType.String)
                         {
-                            jarr[i] = SpiderSharp.Helpers.Url.ReplaceQueryString(jarr[i].ToString(), string.Empty);
+                            jarr[i] = SpiderSharp.Helpers.Url.RemoveQueryString(jarr[i].ToString());
                         }
                     }
                 }
@@ -29,7 +29,7 @@ namespace SpiderSharp
                     string link = jtoken.Value<string>().ToString();
 
                     JValue property = (JValue)jtoken;
-                    property.Value = SpiderSharp.Helpers.Url.ReplaceQueryString(link, string.Empty);
+                    property.Value = SpiderSharp.Helpers.Url.RemoveQueryString(link);
                 }
             }
 

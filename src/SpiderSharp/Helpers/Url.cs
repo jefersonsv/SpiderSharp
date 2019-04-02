@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace SpiderSharp.Helpers
 {
@@ -27,8 +28,8 @@ namespace SpiderSharp.Helpers
 
             UriBuilder uri = new UriBuilder(url);
             uri.Query = newQueryString;
-
-            return uri.Uri.ToString();
+            
+            return System.Web.HttpUtility.UrlPathEncode(uri.Uri.ToString());
         }
 
         public static string ReplaceBookmark(string url, string newQueryString)
@@ -47,7 +48,16 @@ namespace SpiderSharp.Helpers
             return ReplaceQueryString(url, string.Empty);
         }
 
+        public static string SetQueryString(string url, string queryStringKey, string queryStringValue)
+        {
+            var uri = new UriBuilder(url);
 
+            var qs = HttpUtility.ParseQueryString(uri.Query);
+            qs.Set(queryStringKey, queryStringValue);
 
+            uri.Query = qs.ToString();
+
+            return System.Web.HttpUtility.UrlPathEncode(uri.Uri.ToString());
+        }
     }
 }

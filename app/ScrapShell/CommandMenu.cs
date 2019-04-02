@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ScrapShell
 {
@@ -40,7 +37,8 @@ namespace ScrapShell
             if (CheckCollide(regex))
                 throw new Exception($"The '{regex}' will collide has other command");
 
-            dict.Add(regex, new CommandItem { Regex = new Regex(regex, RegexOptions.IgnoreCase), Action = action, Description = description });
+            var reg = new Regex(regex, RegexOptions.IgnoreCase);
+            dict.Add(regex, new CommandItem { Regex = reg, Action = action, Description = description });
         }
 
         public static string StripNameGroups(string regex)
@@ -105,13 +103,20 @@ namespace ScrapShell
 
         public void Execute()
         {
-            Console.WriteLine(string.Empty);
             ReadLine.HistoryEnabled = true;
 
             while (true)
             {
                 var isValid = false;
-                string input = ReadLine.Read($"{prefix} # ");
+
+                var restoreColor = Console.ForegroundColor;
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write($"{prefix} # ");
+                Console.ForegroundColor = ConsoleColor.White;
+                string input = ReadLine.Read();
+
+                Console.ForegroundColor = restoreColor;
 
                 foreach (var item in dict)
                 {
