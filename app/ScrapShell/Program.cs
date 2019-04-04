@@ -298,13 +298,14 @@ namespace ScrapShell
             mainMenu.AddCommand("outerhtml (?<selector>.*)", OuterHtmlCommand, "outerhtml => select outerhtml using css selector");
             mainMenu.AddCommand("links (?<selector>.*)", LinksCommand, "links => select links using css selector");
             mainMenu.AddCommand("json (?<selector>.*)", JsonCommand, "json => select links using css selector");
-            mainMenu.AddCommand("path (?<selector>.*)", PathCommand, "json => select links using css selector");
+            mainMenu.AddCommand("path (?<selector>.*)", PathCommand, "path => select links using css selector and print json path");
             mainMenu.AddCommand("cls|clear", ClearCommand, "cls => clear screen");
             mainMenu.AddCommand("browse", BrowseCommand, "browse => open browser with content");
             mainMenu.AddCommand("notepad", NotepadCommand, "notepad => open notepad with content");
             mainMenu.AddCommand("help", HelpCommand, "help => show all commands");
             mainMenu.AddExitCommand("exit|quit|back", "quit => exit program");
             mainMenu.PrintHelp();
+            Console.WriteLine(string.Empty);
             currentMenu = mainMenu;
             mainMenu.Execute();
         }

@@ -188,10 +188,35 @@ The project include a simple quotes scrap of http://quotes.toscrape.com
 
 ## Scrap Shell
 
-This application can be used to inspect and debug a spider
+This application can be used to inspect and debug a spider with the bellow features
+
+* set => set httpclient or anglesharp driver to request
+* load => load url or local file
+* save => save content to local file
+* innertext => select innertext using css selector
+* attribute => select attribute value using css selector
+* innerhtml => select innerhtml using css selector
+* outerhtml => select outerhtml using css selector
+* links => select links using css selector
+* json => select links using css selector
+* path => select links using css selector and print json path
+* cls => clear screen
+* browse => open browser with content
+* notepad => open notepad with content
+* help => show all commands
+* quit => exit program
+
+### How to use Scrap Shell
+
+1. Use the __set__ command to choose what kind of driver to request
+2. Load any url or local file with a page content
+3. If you want use the command __browse__ to see the page content inside the browser
+4. Try to get data with any css selector with the commands: __innertext__, __attribute__, __innerhtml__, __outerhtml__, __links__, __json__ or __path__
+5. You will see the result on console
+
+** You can use the command __notead__ to see the result of last css selector command on text editor or use the command __save__ to write content to a file **
 
 ## Thanks to
 
 - [AngleSharp](https://github.com/AngleSharp/AngleSharp) - The ultimate angle brackets parser library parsing HTML5, MathML, SVG and CSS to construct a DOM based on the official W3C specifications
-- [HtmlAgilityPack](https://github.com/zzzprojects/html-agility-pack) - Html Agility Pack (HAP)
 - [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) - The ultimate dirty YouTube library

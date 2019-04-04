@@ -54,6 +54,9 @@ namespace SpiderSharp.Helpers
 
         public static string RegexUrl(string text)
         {
+            if (string.IsNullOrWhiteSpace(text))
+                return null;
+
             var match = RegexLibrary.Url.Match(text);
             if (match.Success)
                 return match.Value;

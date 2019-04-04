@@ -194,6 +194,7 @@ namespace SpiderSharp
                 ct.Data.Exception = JsonConvert.SerializeObject(ex);
                 //ct.RunEmbedMetadataPipeline();
                 Log.Error(ex, ct.Data.ToString());
+                throw ex;
             }
 
             return false;

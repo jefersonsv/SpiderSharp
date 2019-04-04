@@ -60,6 +60,10 @@ namespace SpiderSharp
                 var redis = new DataFoundation.Redis.RedisConnection(this.RedisConnectrionstring, this.RedisPassword);
                 this.cachedRequester = this.cachedRequester ?? new HttpRequester.RequesterCached(this.HttpProvider, new CacheProvider(redis, this.Duration));
             }
+            else
+            {
+                this.cachedRequester = this.client;
+            }
         }
 
         //public async Task SimplePostAsync(string url)

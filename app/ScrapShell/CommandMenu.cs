@@ -150,7 +150,7 @@ namespace ScrapShell
                         OnCommandNotFound();
                     }
 
-                    Console.WriteLine(string.Empty);
+                    //Console.WriteLine(string.Empty);   
                 }
             }
         }
