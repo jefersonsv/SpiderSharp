@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DataFoundation.ElasticSearch" Version="1.0.6" />
+    <PackageReference Include="DataFoundation.ElasticSearch" Version="1.0.10" />
     <PackageReference Include="DataFoundation.InfluxDB" Version="1.0.5" />
     <PackageReference Include="DataFoundation.MongoDB" Version="1.0.5" />
     <PackageReference Include="DataFoundation.Redis" Version="1.0.7" />
